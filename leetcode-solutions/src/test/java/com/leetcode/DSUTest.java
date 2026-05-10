@@ -42,7 +42,7 @@ public class DSUTest {
     @Test
     public void testInvalidSize() {
         try {
-            DSU dsu = new DSU(0);
+            new DSU(0);
             Assert.fail("Expected thrown message");
         } catch (IllegalArgumentException e) {
             Assert.assertEquals("Invalid size", e.getMessage());
