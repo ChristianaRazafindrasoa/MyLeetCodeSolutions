@@ -1,53 +1,221 @@
 package com.leetcode;
 
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
-import java.util.Stack;
-import java.util.TreeMap;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.TreeMap;
-import java.util.PriorityQueue;
-import java.util.Queue;
-import java.util.TreeSet;
-import java.util.List;
-import java.util.Comparator;
-import java.util.Random;
-import java.util.Deque;
+import java.util.*;
 
+class Solution {
+    public int minimumSemesters(int n, int[][] relations) {
+        int semesters = 0;
+        int[] inDegrees = new int[n + 1];
+        List<List<Integer>> adjList = new ArrayList<>(n + 1);
+        buildAdjListInDegrees(n, relations, inDegrees, adjList);
 
-class LeetCode2 {
-    public boolean canPermutePalindrome(String s) {
-        Map<Character, Integer> charToFreq = new HashMap<>();
-        for (char c : s.toCharArray()) {
-            if (!charToFreq.containsKey(c)) {
-                charToFreq.put(c, 0);
-            }
-            charToFreq.put(c, charToFreq.get(c) + 1);
-        }
-
-        int oddFreqs = 0;
-        for (char c : charToFreq.keySet()) {
-            if (charToFreq.get(c) % 2 == 1) {
-                oddFreqs++;
-            }
-            if (oddFreqs > 1) {
-                return false;
+        Queue<Integer> queue = new ArrayDeque<>();
+        Set<Integer> visited = new HashSet<>();
+        for (int i = 1; i <= n; i++) {
+            if (inDegrees[i] == 0) {
+                queue.add(i);
             }
         }
-        return true;
+
+        while (!queue.isEmpty()) {
+            semesters++;
+            int size = queue.size();
+            while (size > 0) {
+                int current = queue.poll();
+                if (!visited.add(current)) {
+                    return -1;
+                }
+                for (int neighbor : adjList.get(current)) {
+                    inDegrees[neighbor]--;
+                    if (inDegrees[neighbor] == 0) {
+                        queue.add(neighbor);
+                    }
+                }
+                size--;
+            }
+        }
+
+        if (visited.size() < n) {
+            return -1;
+        }
+        return semesters;
+    }
+
+    private void buildAdjListInDegrees(
+            int n, int[][] relations, int[] inDegrees, List<List<Integer>> adjList) {
+        for (int i = 0; i <= n; i++) {
+            adjList.add(new ArrayList<>());
+        }
+        for (int[] relation : relations) {
+            adjList.get(relation[0]).add(relation[1]);
+            inDegrees[relation[1]]++;
+        }
     }
 
     public static void main(String[] args) {
-        System.out.println(new Solution().canPermutePalindrome("eedcd"));
+        System.out.println(new Solution().minimumSemesters(3, new int[][]{{1,3},{2,3}}));
+        System.out.println(new Solution().minimumSemesters(3, new int[][]{{1,2},{2,3},{3,1}}));
     }
 }
+
+// class Solution {
+//     public Node cloneTree(Node root) {
+//         if (root == null) {
+//             return root;
+//         }
+//         Map<Node, Node> oldToNew = new HashMap<>();
+//         buildOldToNewNodes(root, oldToNew);
+//         assignNewNodes(root, oldToNew);
+//         return oldToNew.get(root);
+//     }
+
+//     private void buildOldToNewNodes(Node current, Map<Node, Node> oldToNew) {
+//         if (current == null) {
+//             return;
+//         }
+//         Node currentCopy = new Node(current.val);
+//         oldToNew.put(current, currentCopy);
+//         for (Node child : current.children) {
+//             buildOldToNewNodes(child, oldToNew);
+//         }
+//     }
+
+//     private void assignNewNodes(Node current, Map<Node, Node> oldToNew) {
+//         if (current == null) {
+//             return;
+//         }
+//         Node currentCopy = oldToNew.get(current);
+//         for (Node child : current.children) {
+//             currentCopy.children.add(oldToNew.get(child));
+//             assignNewNodes(child, oldToNew);
+//         }
+//     }
+// }
+
+// class Solution {
+//     public int totalReplacements(int[] ranks) {
+//         int min = ranks[0];
+//         int replacements = 0;
+//         for (int rank : ranks) {
+//             if (min > rank) {
+//                 min = rank;
+//                 replacements++;
+//             }
+//         }
+//         return replacements;
+//     }
+// }
+
+// class Solution {
+//     public void wiggleSort(int[] nums) {
+//         Arrays.sort(nums);
+//         int[] result = new int[nums.length];
+//         int index = 0;
+//         for (int i = 0; i < nums.length; i += 2) {
+//             result[i] = nums[index];
+//             if (index < nums.length / 2) {
+//                 result[i + 1] = nums[nums.length - 1 - index];
+//             }
+//             index++;
+//         }
+//         for (int i = 0; i < nums.length; i++) {
+//             nums[i] = result[i];
+//         } 
+//     }
+
+//     public static void main(String[] args) {
+//         int[] nums = new int[]{3,5,2,1,6,4,6};
+//         new Solution().wiggleSort(nums);
+//         System.out.println(Arrays.toString(nums));
+//     }
+// }
+
+// class Solution {
+//     public int numberOfSpecialSubstrings(String s) {
+//         int[] asciiValues = new int[128];
+//         int left = 0;
+//         int right = 1;
+//         asciiValues[s.charAt(left)]++;
+//         int count = s.length();
+        
+//         while (right < s.length()) {
+//             char cRight = s.charAt(right);
+//             if (asciiValues[cRight] == 0) {
+//                 if (right != left) {
+//                     count += (right - left);
+//                 }
+//                 asciiValues[cRight]++;
+//                 right++;
+//                 continue;
+//             }
+//             while (asciiValues[cRight] > 0) {
+//                 char cLeft = s.charAt(left);
+//                 asciiValues[cLeft]--;
+//                 left++;
+//             }
+//         }
+//         return count;
+//     }
+
+//     public static void main(String[] args) {
+//         System.out.println(new Solution().numberOfSpecialSubstrings("abab")); // 7
+//         System.out.println(new Solution().numberOfSpecialSubstrings("ooo")); // 3
+//         System.out.println(new Solution().numberOfSpecialSubstrings("abcd")); // 10
+//     }
+// }
+
+// class Solution {
+//     public int maximumUniqueSubarray(int[] nums) {
+//         Set<Integer> set = new HashSet<>();
+//         int left = 0;
+//         int right = 0;
+//         int maxScore = 0;
+//         int score = 0;
+//         while (right < nums.length) {
+//             if (set.add(nums[right])) {
+//                 score += nums[right++];
+//                 maxScore = Math.max(maxScore, score);
+//                 continue;
+//             }
+//             while (set.contains(nums[right])) {
+//                 score -= nums[left];
+//                 set.remove(nums[left++]);   
+//             }
+//         }
+//         return maxScore;
+//     }
+
+//     public static void main(String[] args) {
+//         System.out.println(new Solution().maximumUniqueSubarray(new int[]{5,2,1,2,5,2,1,2,5}));;
+//     }
+// }
+
+// class Solution {
+//     public boolean canPermutePalindrome(String s) {
+//         Map<Character, Integer> charToFreq = new HashMap<>();
+//         for (char c : s.toCharArray()) {
+//             if (!charToFreq.containsKey(c)) {
+//                 charToFreq.put(c, 0);
+//             }
+//             charToFreq.put(c, charToFreq.get(c) + 1);
+//         }
+
+//         int oddFreqs = 0;
+//         for (char c : charToFreq.keySet()) {
+//             if (charToFreq.get(c) % 2 == 1) {
+//                 oddFreqs++;
+//             }
+//             if (oddFreqs > 1) {
+//                 return false;
+//             }
+//         }
+//         return true;
+//     }
+
+//     public static void main(String[] args) {
+//         System.out.println(new Solution().canPermutePalindrome("eedcd"));
+//     }
+// }
 
 // class Solution {
 //     public int countComponents(int n, int[][] edges) {
