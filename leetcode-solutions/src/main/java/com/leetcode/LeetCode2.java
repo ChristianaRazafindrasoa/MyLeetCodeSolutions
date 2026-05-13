@@ -3,60 +3,126 @@ package com.leetcode;
 import java.util.*;
 
 class Solution {
-    public int minimumSemesters(int n, int[][] relations) {
-        int semesters = 0;
-        int[] inDegrees = new int[n + 1];
-        List<List<Integer>> adjList = new ArrayList<>(n + 1);
-        buildAdjListInDegrees(n, relations, inDegrees, adjList);
+    public boolean isReflected(int[][] points) {
+        Map<Integer, Set<Integer>> xToYsMap = buildMap(points);
+        int min = Integer.MAX_VALUE;
+        int max = Integer.MIN_VALUE;
+        for (Map.Entry<Integer, Set<Integer>> entry : xToYsMap.entrySet()) {
+            min = Math.min(min, entry.getKey());
+            max = Math.max(max, entry.getKey());
+        }
 
-        Queue<Integer> queue = new ArrayDeque<>();
-        Set<Integer> visited = new HashSet<>();
-        for (int i = 1; i <= n; i++) {
-            if (inDegrees[i] == 0) {
-                queue.add(i);
+        double yLine = min + (double)(max - min) / 2;
+        Set<Integer> leftXCoords = getLeftXCoords(xToYsMap, yLine);
+        for (int left : leftXCoords) {
+            int right = left + (int)((yLine - left) * 2);
+            if (!xToYsMap.containsKey(right) || 
+                !areSame(xToYsMap.get(left), xToYsMap.get(right))) {
+                return false;
+            }
+            xToYsMap.remove(left);
+            if (left != right) {
+                xToYsMap.remove(right);
             }
         }
-
-        while (!queue.isEmpty()) {
-            semesters++;
-            int size = queue.size();
-            while (size > 0) {
-                int current = queue.poll();
-                if (!visited.add(current)) {
-                    return -1;
-                }
-                for (int neighbor : adjList.get(current)) {
-                    inDegrees[neighbor]--;
-                    if (inDegrees[neighbor] == 0) {
-                        queue.add(neighbor);
-                    }
-                }
-                size--;
-            }
-        }
-
-        if (visited.size() < n) {
-            return -1;
-        }
-        return semesters;
+        return xToYsMap.size() == 0;
     }
 
-    private void buildAdjListInDegrees(
-            int n, int[][] relations, int[] inDegrees, List<List<Integer>> adjList) {
-        for (int i = 0; i <= n; i++) {
-            adjList.add(new ArrayList<>());
+    private Map<Integer, Set<Integer>> buildMap(int[][] points) {
+        Map<Integer, Set<Integer>> xToYsMap = new HashMap<>();
+        for (int[] point : points) {
+            if (!xToYsMap.containsKey(point[0])) {
+                xToYsMap.put(point[0], new HashSet<>());
+            }
+            xToYsMap.get(point[0]).add(point[1]);
         }
-        for (int[] relation : relations) {
-            adjList.get(relation[0]).add(relation[1]);
-            inDegrees[relation[1]]++;
+        return xToYsMap;
+    }
+
+    private Set<Integer> getLeftXCoords(Map<Integer, Set<Integer>> xToYsMap, double yLine) {
+        Set<Integer> leftXCoords = new HashSet<>();
+        for (int key : xToYsMap.keySet()) {
+            if (key <= yLine) {
+                leftXCoords.add(key);
+            }
         }
+        return leftXCoords;
+    }
+
+    private boolean areSame(Set<Integer> left, Set<Integer> right) {
+        if (left.size() != right.size()) {
+            return false;
+        }
+        for (int yCoord : left) {
+            if (!right.contains(yCoord)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public static void main(String[] args) {
-        System.out.println(new Solution().minimumSemesters(3, new int[][]{{1,3},{2,3}}));
-        System.out.println(new Solution().minimumSemesters(3, new int[][]{{1,2},{2,3},{3,1}}));
+        System.out.println(new Solution().isReflected(new int[][]{{0,0},{1,0}}));
+        System.out.println(new Solution().isReflected(new int[][]{{-1,1},{1,1},{1,1}}));
+        System.out.println(new Solution().isReflected(new int[][]{{1,1},{9,1},{8,2}}));
     }
 }
+
+// class Solution {
+//     public int minimumSemesters(int n, int[][] relations) {
+//         int semesters = 0;
+//         int[] inDegrees = new int[n + 1];
+//         List<List<Integer>> adjList = new ArrayList<>(n + 1);
+//         buildAdjListInDegrees(n, relations, inDegrees, adjList);
+
+//         Queue<Integer> queue = new ArrayDeque<>();
+//         Set<Integer> visited = new HashSet<>();
+//         for (int i = 1; i <= n; i++) {
+//             if (inDegrees[i] == 0) {
+//                 queue.add(i);
+//             }
+//         }
+
+//         while (!queue.isEmpty()) {
+//             semesters++;
+//             int size = queue.size();
+//             while (size > 0) {
+//                 int current = queue.poll();
+//                 if (!visited.add(current)) {
+//                     return -1;
+//                 }
+//                 for (int neighbor : adjList.get(current)) {
+//                     inDegrees[neighbor]--;
+//                     if (inDegrees[neighbor] == 0) {
+//                         queue.add(neighbor);
+//                     }
+//                 }
+//                 size--;
+//             }
+//         }
+
+//         if (visited.size() < n) {
+//             return -1;
+//         }
+//         return semesters;
+//     }
+
+//     private void buildAdjListInDegrees(
+//             int n, int[][] relations, int[] inDegrees, List<List<Integer>> adjList) {
+//         for (int i = 0; i <= n; i++) {
+//             adjList.add(new ArrayList<>());
+//         }
+//         for (int[] relation : relations) {
+//             adjList.get(relation[0]).add(relation[1]);
+//             inDegrees[relation[1]]++;
+//         }
+//     }
+
+//     public static void main(String[] args) {
+//         System.out.println(new Solution().minimumSemesters(3, new int[][]{{1,3},{2,3}}));
+//         System.out.println(new Solution().minimumSemesters(3, new int[][]{{1,2},{2,3},{3,1}}));
+//     }
+// }
 
 // class Solution {
 //     public Node cloneTree(Node root) {
