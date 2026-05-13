@@ -3,70 +3,88 @@ package com.leetcode;
 import java.util.*;
 
 class Solution {
-    public boolean isReflected(int[][] points) {
-        Map<Integer, Set<Integer>> xToYsMap = buildMap(points);
-        int min = Integer.MAX_VALUE;
-        int max = Integer.MIN_VALUE;
-        for (Map.Entry<Integer, Set<Integer>> entry : xToYsMap.entrySet()) {
-            min = Math.min(min, entry.getKey());
-            max = Math.max(max, entry.getKey());
-        }
-
-        double yLine = min + (double)(max - min) / 2;
-        Set<Integer> leftXCoords = getLeftXCoords(xToYsMap, yLine);
-        for (int left : leftXCoords) {
-            int right = left + (int)((yLine - left) * 2);
-            if (!xToYsMap.containsKey(right) || 
-                !areSame(xToYsMap.get(left), xToYsMap.get(right))) {
-                return false;
+    public boolean isStrobogrammatic(String num) {
+        for (int i = 0; i < num.length(); i++) {
+            char number = num.charAt(i);
+            char opposite = num.charAt(num.length() - 1 - i);
+            if ((number == '6' && opposite == '9') ||
+                (number == '9' && opposite == '6') ||
+                (number == '8' && opposite == '8') ||
+                (number == '1' && opposite == '1') ||
+                (number == '0' && opposite == '0')) {
+                continue;
             }
-            xToYsMap.remove(left);
-            if (left != right) {
-                xToYsMap.remove(right);
-            }
-        }
-        return xToYsMap.size() == 0;
-    }
-
-    private Map<Integer, Set<Integer>> buildMap(int[][] points) {
-        Map<Integer, Set<Integer>> xToYsMap = new HashMap<>();
-        for (int[] point : points) {
-            if (!xToYsMap.containsKey(point[0])) {
-                xToYsMap.put(point[0], new HashSet<>());
-            }
-            xToYsMap.get(point[0]).add(point[1]);
-        }
-        return xToYsMap;
-    }
-
-    private Set<Integer> getLeftXCoords(Map<Integer, Set<Integer>> xToYsMap, double yLine) {
-        Set<Integer> leftXCoords = new HashSet<>();
-        for (int key : xToYsMap.keySet()) {
-            if (key <= yLine) {
-                leftXCoords.add(key);
-            }
-        }
-        return leftXCoords;
-    }
-
-    private boolean areSame(Set<Integer> left, Set<Integer> right) {
-        if (left.size() != right.size()) {
             return false;
-        }
-        for (int yCoord : left) {
-            if (!right.contains(yCoord)) {
-                return false;
-            }
         }
         return true;
     }
-
-    public static void main(String[] args) {
-        System.out.println(new Solution().isReflected(new int[][]{{0,0},{1,0}}));
-        System.out.println(new Solution().isReflected(new int[][]{{-1,1},{1,1},{1,1}}));
-        System.out.println(new Solution().isReflected(new int[][]{{1,1},{9,1},{8,2}}));
-    }
 }
+
+// class Solution {
+//     public boolean isReflected(int[][] points) {
+//         Map<Integer, Set<Integer>> xToYsMap = buildMap(points);
+//         int min = Integer.MAX_VALUE;
+//         int max = Integer.MIN_VALUE;
+//         for (Map.Entry<Integer, Set<Integer>> entry : xToYsMap.entrySet()) {
+//             min = Math.min(min, entry.getKey());
+//             max = Math.max(max, entry.getKey());
+//         }
+
+//         double yLine = min + (double)(max - min) / 2;
+//         Set<Integer> leftXCoords = getLeftXCoords(xToYsMap, yLine);
+//         for (int left : leftXCoords) {
+//             int right = left + (int)((yLine - left) * 2);
+//             if (!xToYsMap.containsKey(right) || 
+//                 !areSame(xToYsMap.get(left), xToYsMap.get(right))) {
+//                 return false;
+//             }
+//             xToYsMap.remove(left);
+//             if (left != right) {
+//                 xToYsMap.remove(right);
+//             }
+//         }
+//         return xToYsMap.size() == 0;
+//     }
+
+//     private Map<Integer, Set<Integer>> buildMap(int[][] points) {
+//         Map<Integer, Set<Integer>> xToYsMap = new HashMap<>();
+//         for (int[] point : points) {
+//             if (!xToYsMap.containsKey(point[0])) {
+//                 xToYsMap.put(point[0], new HashSet<>());
+//             }
+//             xToYsMap.get(point[0]).add(point[1]);
+//         }
+//         return xToYsMap;
+//     }
+
+//     private Set<Integer> getLeftXCoords(Map<Integer, Set<Integer>> xToYsMap, double yLine) {
+//         Set<Integer> leftXCoords = new HashSet<>();
+//         for (int key : xToYsMap.keySet()) {
+//             if (key <= yLine) {
+//                 leftXCoords.add(key);
+//             }
+//         }
+//         return leftXCoords;
+//     }
+
+//     private boolean areSame(Set<Integer> left, Set<Integer> right) {
+//         if (left.size() != right.size()) {
+//             return false;
+//         }
+//         for (int yCoord : left) {
+//             if (!right.contains(yCoord)) {
+//                 return false;
+//             }
+//         }
+//         return true;
+//     }
+
+//     public static void main(String[] args) {
+//         System.out.println(new Solution().isReflected(new int[][]{{0,0},{1,0}}));
+//         System.out.println(new Solution().isReflected(new int[][]{{-1,1},{1,1},{1,1}}));
+//         System.out.println(new Solution().isReflected(new int[][]{{1,1},{9,1},{8,2}}));
+//     }
+// }
 
 // class Solution {
 //     public int minimumSemesters(int n, int[][] relations) {
