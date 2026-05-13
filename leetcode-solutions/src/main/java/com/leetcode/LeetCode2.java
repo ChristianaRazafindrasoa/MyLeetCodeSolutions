@@ -3,22 +3,63 @@ package com.leetcode;
 import java.util.*;
 
 class Solution {
-    public boolean isStrobogrammatic(String num) {
-        for (int i = 0; i < num.length(); i++) {
-            char number = num.charAt(i);
-            char opposite = num.charAt(num.length() - 1 - i);
-            if ((number == '6' && opposite == '9') ||
-                (number == '9' && opposite == '6') ||
-                (number == '8' && opposite == '8') ||
-                (number == '1' && opposite == '1') ||
-                (number == '0' && opposite == '0')) {
+    public List<Integer> shortestDistanceColor(int[] colors, int[][] queries) {
+        List<Integer> shortestDistances = new ArrayList<>(queries.length);
+        Map<String, Integer> memo = new HashMap<>();
+        for (int[] query : queries) {
+            String key = query[0] + "," + query[1];
+            if (memo.containsKey(key)) {
+                shortestDistances.add(memo.get(key));
                 continue;
             }
-            return false;
+            int left = shortestDistanceColorHelper(colors, query[0], query[1], 0, -1);
+            int right = shortestDistanceColorHelper(colors, query[0], query[1], 0, +1);
+            int minDist;
+            if (left == -1) {
+                minDist = right;
+            } else if (right == -1) {
+                minDist = left;
+            } else {
+                minDist = Math.min(left, right);
+            }
+            shortestDistances.add(minDist);
+            memo.put(key, minDist);
         }
-        return true;
+        return shortestDistances;
+    }
+
+    private int shortestDistanceColorHelper(int[] colors, int index, int color, int dist, int delta) {
+        if (index < 0 || index >= colors.length) {
+            return -1;
+        }
+        if (color == colors[index]) {
+            return dist;
+        }
+        return shortestDistanceColorHelper(colors, index + delta, color, dist + 1, delta);
+    }
+
+    public static void main(String[] args) {
+        System.out.println(new Solution().shortestDistanceColor(new int[]{1,2}, new int[][]{{0,3}}));
     }
 }
+
+// class Solution {
+//     public boolean isStrobogrammatic(String num) {
+//         for (int i = 0; i < num.length(); i++) {
+//             char number = num.charAt(i);
+//             char opposite = num.charAt(num.length() - 1 - i);
+//             if ((number == '6' && opposite == '9') ||
+//                 (number == '9' && opposite == '6') ||
+//                 (number == '8' && opposite == '8') ||
+//                 (number == '1' && opposite == '1') ||
+//                 (number == '0' && opposite == '0')) {
+//                 continue;
+//             }
+//             return false;
+//         }
+//         return true;
+//     }
+// }
 
 // class Solution {
 //     public boolean isReflected(int[][] points) {
