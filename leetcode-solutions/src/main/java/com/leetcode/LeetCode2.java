@@ -2,46 +2,85 @@ package com.leetcode;
 
 import java.util.*;
 
+class ListNode {
+    int val;
+    ListNode next;
+    ListNode() {}
+    ListNode(int val) { this.val = val; }
+    ListNode(int val, ListNode next) { this.val = val; this.next = next; }
+}
+
 class Solution {
-    public List<Integer> shortestDistanceColor(int[] colors, int[][] queries) {
-        List<Integer> shortestDistances = new ArrayList<>(queries.length);
-        Map<String, Integer> memo = new HashMap<>();
-        for (int[] query : queries) {
-            String key = query[0] + "," + query[1];
-            if (memo.containsKey(key)) {
-                shortestDistances.add(memo.get(key));
-                continue;
-            }
-            int left = shortestDistanceColorHelper(colors, query[0], query[1], 0, -1);
-            int right = shortestDistanceColorHelper(colors, query[0], query[1], 0, +1);
-            int minDist;
-            if (left == -1) {
-                minDist = right;
-            } else if (right == -1) {
-                minDist = left;
-            } else {
-                minDist = Math.min(left, right);
-            }
-            shortestDistances.add(minDist);
-            memo.put(key, minDist);
+    public ListNode reverseBetween(ListNode head, int left, int right) {
+        List<Integer> nodes = getNodes(head, left, right);
+        ListNode result = new ListNode();
+        ListNode current = result;
+        for (int val : nodes) {
+            current.next = new ListNode(val);
+            current = current.next;
         }
-        return shortestDistances;
+        return result.next;
     }
 
-    private int shortestDistanceColorHelper(int[] colors, int index, int color, int dist, int delta) {
-        if (index < 0 || index >= colors.length) {
-            return -1;
+    private List<Integer> getNodes(ListNode head, int left, int right) {
+        ListNode current = head;
+        List<Integer> nodes = new ArrayList<>();
+        while (current != null) {
+            nodes.add(current.val);
+            current = current.next;
         }
-        if (color == colors[index]) {
-            return dist;
-        }
-        return shortestDistanceColorHelper(colors, index + delta, color, dist + 1, delta);
-    }
 
-    public static void main(String[] args) {
-        System.out.println(new Solution().shortestDistanceColor(new int[]{1,2}, new int[][]{{0,3}}));
+        while (left < right) {
+            int temp = nodes.get(left - 1);
+            nodes.set(left - 1, nodes.get(right - 1));
+            nodes.set(right - 1, temp);
+            left++;
+            right--;
+        }
+        return nodes;
     }
 }
+
+// class Solution {
+//     public List<Integer> shortestDistanceColor(int[] colors, int[][] queries) {
+//         List<Integer> shortestDistances = new ArrayList<>(queries.length);
+//         Map<String, Integer> memo = new HashMap<>();
+//         for (int[] query : queries) {
+//             String key = query[0] + "," + query[1];
+//             if (memo.containsKey(key)) {
+//                 shortestDistances.add(memo.get(key));
+//                 continue;
+//             }
+//             int left = shortestDistanceColorHelper(colors, query[0], query[1], 0, -1);
+//             int right = shortestDistanceColorHelper(colors, query[0], query[1], 0, +1);
+//             int minDist;
+//             if (left == -1) {
+//                 minDist = right;
+//             } else if (right == -1) {
+//                 minDist = left;
+//             } else {
+//                 minDist = Math.min(left, right);
+//             }
+//             shortestDistances.add(minDist);
+//             memo.put(key, minDist);
+//         }
+//         return shortestDistances;
+//     }
+
+//     private int shortestDistanceColorHelper(int[] colors, int index, int color, int dist, int delta) {
+//         if (index < 0 || index >= colors.length) {
+//             return -1;
+//         }
+//         if (color == colors[index]) {
+//             return dist;
+//         }
+//         return shortestDistanceColorHelper(colors, index + delta, color, dist + 1, delta);
+//     }
+
+//     public static void main(String[] args) {
+//         System.out.println(new Solution().shortestDistanceColor(new int[]{1,2}, new int[][]{{0,3}}));
+//     }
+// }
 
 // class Solution {
 //     public boolean isStrobogrammatic(String num) {
