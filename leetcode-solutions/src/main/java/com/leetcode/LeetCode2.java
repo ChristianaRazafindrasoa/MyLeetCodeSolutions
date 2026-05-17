@@ -3,32 +3,66 @@ package com.leetcode;
 import java.util.*;
 
 class Solution {
-    public List<Integer> arraysIntersection(int[] arr1, int[] arr2, int[] arr3) {
-        List<Integer> result = new ArrayList<>();
-        int index1 = 0;
-        int index2 = 0;
-        int index3 = 0;
-        while (index1 < arr1.length && index2 < arr2.length && index3 < arr3.length) {
-            if (arr1[index1] == arr2[index2] && arr2[index2] == arr3[index3]) {
-                result.add(arr1[index1++]);
-                index2++;
-                index3++;
-            } else if (arr1[index1] <= arr2[index2] && arr1[index1] <= arr3[index3]) {
-                index1++;
-            } else if (arr2[index2] <= arr3[index3] && arr2[index2] <= arr1[index1]) {
-                index2++;
-            } else if (arr3[index3] <= arr1[index1] && arr3[index3] <= arr2[index2]) {
-                index3++;
+    public int brightestPosition(int[][] lights) {
+        Map<Integer, Integer> pointToLights = new TreeMap<>();
+        for (int[] light : lights) {
+            int start =  light[0] - light[1];
+            int end = light[0] + light[1] + 1;
+            if (!pointToLights.containsKey(start)) {
+                pointToLights.put(start, 0);
+            }
+            pointToLights.put(start, pointToLights.get(start) + 1);
+            if (!pointToLights.containsKey(end)) {
+                pointToLights.put(end, 0);
+            }
+            pointToLights.put(end, pointToLights.get(end) - 1);
+        }
+
+        int sum = 0;
+        for (Map.Entry<Integer, Integer> entry : pointToLights.entrySet()) {    
+            sum += entry.getValue();
+            entry.setValue(sum);
+        }
+
+        int brightestPosition = 0;
+        int maxLights = 0;
+        for (Map.Entry<Integer, Integer> entry : pointToLights.entrySet()) {    
+            if (entry.getValue() > maxLights) {
+                maxLights = entry.getValue();
+                brightestPosition = entry.getKey();
             }
         }
-        return result;
-    }
-
-    public static void main(String[] args) {
-        System.out.println(new Solution().arraysIntersection(
-            new int[]{1,2,3,4,5}, new int[]{1,2,5,7,9}, new int[]{1,3,4,5,8}));
+        return brightestPosition;
     }
 }
+
+// class Solution {
+//     public List<Integer> arraysIntersection(int[] arr1, int[] arr2, int[] arr3) {
+//         List<Integer> result = new ArrayList<>();
+//         int index1 = 0;
+//         int index2 = 0;
+//         int index3 = 0;
+//         while (index1 < arr1.length && index2 < arr2.length && index3 < arr3.length) {
+//             if (arr1[index1] == arr2[index2] && arr2[index2] == arr3[index3]) {
+//                 result.add(arr1[index1++]);
+//                 index2++;
+//                 index3++;
+//             } else if (arr1[index1] <= arr2[index2] && arr1[index1] <= arr3[index3]) {
+//                 index1++;
+//             } else if (arr2[index2] <= arr3[index3] && arr2[index2] <= arr1[index1]) {
+//                 index2++;
+//             } else if (arr3[index3] <= arr1[index1] && arr3[index3] <= arr2[index2]) {
+//                 index3++;
+//             }
+//         }
+//         return result;
+//     }
+
+//     public static void main(String[] args) {
+//         System.out.println(new Solution().arraysIntersection(
+//             new int[]{1,2,3,4,5}, new int[]{1,2,5,7,9}, new int[]{1,3,4,5,8}));
+//     }
+// }
 
 // class Solution {
 //     public int[] reverseSubarrays(int[] nums, int k) {
