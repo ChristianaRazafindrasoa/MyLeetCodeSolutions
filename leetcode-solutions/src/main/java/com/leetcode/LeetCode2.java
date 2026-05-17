@@ -2,6 +2,30 @@ package com.leetcode;
 
 import java.util.*;
 
+class Solution {
+    public int[] reverseSubarrays(int[] nums, int k) {
+        int length = nums.length / k;
+        for (int i = 0; i < nums.length; i += length) {
+            reverse(nums, i, i + length - 1);
+        }
+        return nums;
+    }
+
+    private void reverse(int[] nums, int start, int end) {
+        int mid = start + (end - start) / 2;
+        for (int i = start; i <= mid; i++) {
+            int temp = nums[i];
+            nums[i] = nums[end];
+            nums[end--] = temp;
+        }
+    }
+
+    public static void main(String[] args) {
+        System.out.println(Arrays.toString(
+            new Solution().reverseSubarrays(new int[]{1,2,3,4,5,6}, 3)));
+    }
+}
+
 class ListNode {
     int val;
     ListNode next;
@@ -10,36 +34,36 @@ class ListNode {
     ListNode(int val, ListNode next) { this.val = val; this.next = next; }
 }
 
-class Solution {
-    public ListNode reverseBetween(ListNode head, int left, int right) {
-        List<Integer> nodes = getNodes(head, left, right);
-        ListNode result = new ListNode();
-        ListNode current = result;
-        for (int val : nodes) {
-            current.next = new ListNode(val);
-            current = current.next;
-        }
-        return result.next;
-    }
+// class Solution {
+//     public ListNode reverseBetween(ListNode head, int left, int right) {
+//         List<Integer> nodes = getNodes(head, left, right);
+//         ListNode result = new ListNode();
+//         ListNode current = result;
+//         for (int val : nodes) {
+//             current.next = new ListNode(val);
+//             current = current.next;
+//         }
+//         return result.next;
+//     }
 
-    private List<Integer> getNodes(ListNode head, int left, int right) {
-        ListNode current = head;
-        List<Integer> nodes = new ArrayList<>();
-        while (current != null) {
-            nodes.add(current.val);
-            current = current.next;
-        }
+//     private List<Integer> getNodes(ListNode head, int left, int right) {
+//         ListNode current = head;
+//         List<Integer> nodes = new ArrayList<>();
+//         while (current != null) {
+//             nodes.add(current.val);
+//             current = current.next;
+//         }
 
-        while (left < right) {
-            int temp = nodes.get(left - 1);
-            nodes.set(left - 1, nodes.get(right - 1));
-            nodes.set(right - 1, temp);
-            left++;
-            right--;
-        }
-        return nodes;
-    }
-}
+//         while (left < right) {
+//             int temp = nodes.get(left - 1);
+//             nodes.set(left - 1, nodes.get(right - 1));
+//             nodes.set(right - 1, temp);
+//             left++;
+//             right--;
+//         }
+//         return nodes;
+//     }
+// }
 
 // class Solution {
 //     public List<Integer> shortestDistanceColor(int[] colors, int[][] queries) {
