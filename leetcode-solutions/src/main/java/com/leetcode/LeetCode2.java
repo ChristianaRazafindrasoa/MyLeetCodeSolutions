@@ -3,28 +3,56 @@ package com.leetcode;
 import java.util.*;
 
 class Solution {
-    public int[] reverseSubarrays(int[] nums, int k) {
-        int length = nums.length / k;
-        for (int i = 0; i < nums.length; i += length) {
-            reverse(nums, i, i + length - 1);
+    public List<Integer> arraysIntersection(int[] arr1, int[] arr2, int[] arr3) {
+        List<Integer> result = new ArrayList<>();
+        int index1 = 0;
+        int index2 = 0;
+        int index3 = 0;
+        while (index1 < arr1.length && index2 < arr2.length && index3 < arr3.length) {
+            if (arr1[index1] == arr2[index2] && arr2[index2] == arr3[index3]) {
+                result.add(arr1[index1++]);
+                index2++;
+                index3++;
+            } else if (arr1[index1] <= arr2[index2] && arr1[index1] <= arr3[index3]) {
+                index1++;
+            } else if (arr2[index2] <= arr3[index3] && arr2[index2] <= arr1[index1]) {
+                index2++;
+            } else if (arr3[index3] <= arr1[index1] && arr3[index3] <= arr2[index2]) {
+                index3++;
+            }
         }
-        return nums;
-    }
-
-    private void reverse(int[] nums, int start, int end) {
-        int mid = start + (end - start) / 2;
-        for (int i = start; i <= mid; i++) {
-            int temp = nums[i];
-            nums[i] = nums[end];
-            nums[end--] = temp;
-        }
+        return result;
     }
 
     public static void main(String[] args) {
-        System.out.println(Arrays.toString(
-            new Solution().reverseSubarrays(new int[]{1,2,3,4,5,6}, 3)));
+        System.out.println(new Solution().arraysIntersection(
+            new int[]{1,2,3,4,5}, new int[]{1,2,5,7,9}, new int[]{1,3,4,5,8}));
     }
 }
+
+// class Solution {
+//     public int[] reverseSubarrays(int[] nums, int k) {
+//         int length = nums.length / k;
+//         for (int i = 0; i < nums.length; i += length) {
+//             reverse(nums, i, i + length - 1);
+//         }
+//         return nums;
+//     }
+
+//     private void reverse(int[] nums, int start, int end) {
+//         int mid = start + (end - start) / 2;
+//         for (int i = start; i <= mid; i++) {
+//             int temp = nums[i];
+//             nums[i] = nums[end];
+//             nums[end--] = temp;
+//         }
+//     }
+
+//     public static void main(String[] args) {
+//         System.out.println(Arrays.toString(
+//             new Solution().reverseSubarrays(new int[]{1,2,3,4,5,6}, 3)));
+//     }
+// }
 
 class ListNode {
     int val;
