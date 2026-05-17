@@ -3,38 +3,108 @@ package com.leetcode;
 import java.util.*;
 
 class Solution {
-    public int brightestPosition(int[][] lights) {
-        Map<Integer, Integer> pointToLights = new TreeMap<>();
-        for (int[] light : lights) {
-            int start =  light[0] - light[1];
-            int end = light[0] + light[1] + 1;
-            if (!pointToLights.containsKey(start)) {
-                pointToLights.put(start, 0);
-            }
-            pointToLights.put(start, pointToLights.get(start) + 1);
-            if (!pointToLights.containsKey(end)) {
-                pointToLights.put(end, 0);
-            }
-            pointToLights.put(end, pointToLights.get(end) - 1);
-        }
+    public int longestLine(int[][] mat) {
+        int verticalLongest = getLongestVertically(mat);
+        int horizontalLongest = getLongestHorizontally(mat);
+        int diagonalLongest = getLongestDiagonally(mat);
+        int antiDiagonalLongest = getLongestAntiDiagonally(mat);
+        return Math.max(
+            Math.max(verticalLongest, horizontalLongest), 
+            Math.max(diagonalLongest, antiDiagonalLongest));
+    }
 
-        int sum = 0;
-        for (Map.Entry<Integer, Integer> entry : pointToLights.entrySet()) {    
-            sum += entry.getValue();
-            entry.setValue(sum);
+    private int getLongestVertically(int[][] mat) {
+        int length = 0;
+        for (int col = 0; col < mat[0].length; col++) {
+            length = Math.max(length, getMaxLength(mat, 0, col, +1, 0));
         }
+        return length;
+    }
 
-        int brightestPosition = 0;
-        int maxLights = 0;
-        for (Map.Entry<Integer, Integer> entry : pointToLights.entrySet()) {    
-            if (entry.getValue() > maxLights) {
-                maxLights = entry.getValue();
-                brightestPosition = entry.getKey();
-            }
+    private int getLongestHorizontally(int[][] mat) {
+        int length = 0;
+        for (int row = 0; row < mat.length; row++) {
+            length = Math.max(length, getMaxLength(mat, row, 0, 0, +1));
         }
-        return brightestPosition;
+        return length;
+    }
+
+    private int getLongestDiagonally(int[][] mat) {
+        int length = 0;
+        for (int row = 0; row < mat.length; row++) {
+            length = Math.max(length, getMaxLength(mat, row, 0, +1, +1));
+        }
+        for (int col = 0; col < mat[0].length; col++) {
+            length = Math.max(length, getMaxLength(mat, 0, col, +1, +1));
+        }
+        return length;
+    }
+
+    private int getLongestAntiDiagonally(int[][] mat) {
+        int length = 0;
+        for (int col = 0; col < mat[0].length; col++) {
+            length = Math.max(length, getMaxLength(mat, 0, col, +1, -1));
+        }
+        for (int row = 0; row < mat.length; row++) {
+            length = Math.max(length, getMaxLength(mat, row, mat[0].length - 1, +1, -1));
+        }
+        return length;
+    }
+
+    private int getMaxLength(int[][] mat, int row, int col, int deltaRow, int deltaCol) {
+        int maxLength = 0;
+        int length = 0;
+        while (row >= 0 && row < mat.length && col >= 0 && col < mat[0].length) {
+            if (mat[row][col] == 0) {
+                length = 0;
+            } else {
+                length++;
+            }
+            row += deltaRow;
+            col += deltaCol;
+            maxLength = Math.max(maxLength, length);
+        }
+        return maxLength;
+    }
+
+    public static void main(String[] args) {
+        System.out.println(new Solution().longestLine(new int[][]{{1,1,1,1},{0,1,1,0},{0,0,0,1}}));
     }
 }
+
+// class Solution {
+//     public int brightestPosition(int[][] lights) {
+//         Map<Integer, Integer> pointToLights = new TreeMap<>();
+//         for (int[] light : lights) {
+//             int start =  light[0] - light[1];
+//             int end = light[0] + light[1] + 1;
+//             if (!pointToLights.containsKey(start)) {
+//                 pointToLights.put(start, 0);
+//             }
+//             pointToLights.put(start, pointToLights.get(start) + 1);
+//             if (!pointToLights.containsKey(end)) {
+//                 pointToLights.put(end, 0);
+//             }
+//             pointToLights.put(end, pointToLights.get(end) - 1);
+//         }
+
+//         int sum = 0;
+//         for (Map.Entry<Integer, Integer> entry : pointToLights.entrySet()) {    
+//             sum += entry.getValue();
+//             entry.setValue(sum);
+//         }
+
+//         int brightestPosition = 0;
+//         int maxLights = 0;
+//         for (Map.Entry<Integer, Integer> entry : pointToLights.entrySet()) {    
+//             if (entry.getValue() > maxLights) {
+//                 maxLights = entry.getValue();
+//                 brightestPosition = entry.getKey();
+//             }
+//         }
+//         return brightestPosition;
+//     }
+// }
 
 // class Solution {
 //     public List<Integer> arraysIntersection(int[] arr1, int[] arr2, int[] arr3) {
