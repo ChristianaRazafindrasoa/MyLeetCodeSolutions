@@ -2,75 +2,146 @@ package com.leetcode;
 
 import java.util.*;
 
-class Solution {
-    public int longestLine(int[][] mat) {
-        int verticalLongest = getLongestVertically(mat);
-        int horizontalLongest = getLongestHorizontally(mat);
-        int diagonalLongest = getLongestDiagonally(mat);
-        int antiDiagonalLongest = getLongestAntiDiagonally(mat);
-        return Math.max(
-            Math.max(verticalLongest, horizontalLongest), 
-            Math.max(diagonalLongest, antiDiagonalLongest));
+class OrderManagementSystem {
+    class Order {
+        int orderId;
+        String orderType;
+        int price;
+        public Order(int orderId, String orderType, int price) {
+            this.orderId = orderId;
+            this.orderType = orderType;
+            this.price = price;
+        }
     }
 
-    private int getLongestVertically(int[][] mat) {
-        int length = 0;
-        for (int col = 0; col < mat[0].length; col++) {
-            length = Math.max(length, getMaxLength(mat, 0, col, +1, 0));
-        }
-        return length;
+    private Map<String, List<Order>> keyToOrders;
+    private Map<Integer, String> orderIdToKey;
+    public OrderManagementSystem() {
+        keyToOrders = new HashMap<>();
+        orderIdToKey = new HashMap<>();
     }
-
-    private int getLongestHorizontally(int[][] mat) {
-        int length = 0;
-        for (int row = 0; row < mat.length; row++) {
-            length = Math.max(length, getMaxLength(mat, row, 0, 0, +1));
+    
+    public void addOrder(int orderId, String orderType, int price) {
+        String key = toKey(orderType, price);
+        if (!keyToOrders.containsKey(key)) {
+            keyToOrders.put(key, new ArrayList<>());
         }
-        return length;
+        keyToOrders.get(key).add(new Order(orderId, orderType, price));
+        orderIdToKey.put(orderId, key);
     }
-
-    private int getLongestDiagonally(int[][] mat) {
-        int length = 0;
-        for (int row = 0; row < mat.length; row++) {
-            length = Math.max(length, getMaxLength(mat, row, 0, +1, +1));
+    
+    public void modifyOrder(int orderId, int newPrice) {
+        String oldKey = orderIdToKey.get(orderId);
+        String orderType = "buy";
+        if (oldKey.startsWith("sell")) {
+            orderType = "sell";
         }
-        for (int col = 0; col < mat[0].length; col++) {
-            length = Math.max(length, getMaxLength(mat, 0, col, +1, +1));
-        }
-        return length;
+        cancelOrder(orderId);
+        addOrder(orderId, orderType, newPrice);
     }
-
-    private int getLongestAntiDiagonally(int[][] mat) {
-        int length = 0;
-        for (int col = 0; col < mat[0].length; col++) {
-            length = Math.max(length, getMaxLength(mat, 0, col, +1, -1));
-        }
-        for (int row = 0; row < mat.length; row++) {
-            length = Math.max(length, getMaxLength(mat, row, mat[0].length - 1, +1, -1));
-        }
-        return length;
-    }
-
-    private int getMaxLength(int[][] mat, int row, int col, int deltaRow, int deltaCol) {
-        int maxLength = 0;
-        int length = 0;
-        while (row >= 0 && row < mat.length && col >= 0 && col < mat[0].length) {
-            if (mat[row][col] == 0) {
-                length = 0;
-            } else {
-                length++;
+    
+    public void cancelOrder(int orderId) {
+        String oldKey = orderIdToKey.get(orderId);
+        orderIdToKey.remove(orderId);
+        List<Order> orders = keyToOrders.get(oldKey);
+        List<Order> ordersCopy = new ArrayList<>();
+        for (Order order : orders) {
+            if (order.orderId != orderId) {
+                ordersCopy.add(order);
             }
-            row += deltaRow;
-            col += deltaCol;
-            maxLength = Math.max(maxLength, length);
         }
-        return maxLength;
+        keyToOrders.put(oldKey, ordersCopy);
+    }
+    
+    public int[] getOrdersAtPrice(String orderType, int price) {
+        String key = toKey(orderType, price);
+        if (!keyToOrders.containsKey(key)) {
+            return new int[0];
+        }
+        List<Order> orders = keyToOrders.get(key);
+        int[] result = new int[orders.size()];
+        int index = 0;
+        for (Order order : orders) {
+            result[index++] = order.orderId;
+        }
+        return result;
     }
 
-    public static void main(String[] args) {
-        System.out.println(new Solution().longestLine(new int[][]{{1,1,1,1},{0,1,1,0},{0,0,0,1}}));
+    private String toKey(String orderType, int price) {
+        return orderType + price;
     }
 }
+
+
+// class Solution {
+//     public int longestLine(int[][] mat) {
+//         int verticalLongest = getLongestVertically(mat);
+//         int horizontalLongest = getLongestHorizontally(mat);
+//         int diagonalLongest = getLongestDiagonally(mat);
+//         int antiDiagonalLongest = getLongestAntiDiagonally(mat);
+//         return Math.max(
+//             Math.max(verticalLongest, horizontalLongest), 
+//             Math.max(diagonalLongest, antiDiagonalLongest));
+//     }
+
+//     private int getLongestVertically(int[][] mat) {
+//         int length = 0;
+//         for (int col = 0; col < mat[0].length; col++) {
+//             length = Math.max(length, getMaxLength(mat, 0, col, +1, 0));
+//         }
+//         return length;
+//     }
+
+//     private int getLongestHorizontally(int[][] mat) {
+//         int length = 0;
+//         for (int row = 0; row < mat.length; row++) {
+//             length = Math.max(length, getMaxLength(mat, row, 0, 0, +1));
+//         }
+//         return length;
+//     }
+
+//     private int getLongestDiagonally(int[][] mat) {
+//         int length = 0;
+//         for (int row = 0; row < mat.length; row++) {
+//             length = Math.max(length, getMaxLength(mat, row, 0, +1, +1));
+//         }
+//         for (int col = 0; col < mat[0].length; col++) {
+//             length = Math.max(length, getMaxLength(mat, 0, col, +1, +1));
+//         }
+//         return length;
+//     }
+
+//     private int getLongestAntiDiagonally(int[][] mat) {
+//         int length = 0;
+//         for (int col = 0; col < mat[0].length; col++) {
+//             length = Math.max(length, getMaxLength(mat, 0, col, +1, -1));
+//         }
+//         for (int row = 0; row < mat.length; row++) {
+//             length = Math.max(length, getMaxLength(mat, row, mat[0].length - 1, +1, -1));
+//         }
+//         return length;
+//     }
+
+//     private int getMaxLength(int[][] mat, int row, int col, int deltaRow, int deltaCol) {
+//         int maxLength = 0;
+//         int length = 0;
+//         while (row >= 0 && row < mat.length && col >= 0 && col < mat[0].length) {
+//             if (mat[row][col] == 0) {
+//                 length = 0;
+//             } else {
+//                 length++;
+//             }
+//             row += deltaRow;
+//             col += deltaCol;
+//             maxLength = Math.max(maxLength, length);
+//         }
+//         return maxLength;
+//     }
+
+//     public static void main(String[] args) {
+//         System.out.println(new Solution().longestLine(new int[][]{{1,1,1,1},{0,1,1,0},{0,0,0,1}}));
+//     }
+// }
 
 // class Solution {
 //     public int brightestPosition(int[][] lights) {
