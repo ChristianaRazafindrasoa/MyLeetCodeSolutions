@@ -2,75 +2,97 @@ package com.leetcode;
 
 import java.util.*;
 
-class OrderManagementSystem {
-    class Order {
-        int orderId;
-        String orderType;
-        int price;
-        public Order(int orderId, String orderType, int price) {
-            this.orderId = orderId;
-            this.orderType = orderType;
-            this.price = price;
+class Solution {
+    public boolean validWordSquare(List<String> words) {
+        List<String> verticalWords = new ArrayList<>();
+        for (int i = 0; i < words.get(0).length(); i++) {
+            StringBuilder sb = new StringBuilder();
+            for (String word : words) {
+                if (i < word.length()) {
+                    sb.append(word.charAt(i));
+                }
+            }
+            verticalWords.add(sb.toString());
         }
-    }
 
-    private Map<String, List<Order>> keyToOrders;
-    private Map<Integer, String> orderIdToKey;
-    public OrderManagementSystem() {
-        keyToOrders = new HashMap<>();
-        orderIdToKey = new HashMap<>();
-    }
-    
-    public void addOrder(int orderId, String orderType, int price) {
-        String key = toKey(orderType, price);
-        if (!keyToOrders.containsKey(key)) {
-            keyToOrders.put(key, new ArrayList<>());
-        }
-        keyToOrders.get(key).add(new Order(orderId, orderType, price));
-        orderIdToKey.put(orderId, key);
-    }
-    
-    public void modifyOrder(int orderId, int newPrice) {
-        String oldKey = orderIdToKey.get(orderId);
-        String orderType = "buy";
-        if (oldKey.startsWith("sell")) {
-            orderType = "sell";
-        }
-        cancelOrder(orderId);
-        addOrder(orderId, orderType, newPrice);
-    }
-    
-    public void cancelOrder(int orderId) {
-        String oldKey = orderIdToKey.get(orderId);
-        orderIdToKey.remove(orderId);
-        List<Order> orders = keyToOrders.get(oldKey);
-        List<Order> ordersCopy = new ArrayList<>();
-        for (Order order : orders) {
-            if (order.orderId != orderId) {
-                ordersCopy.add(order);
+        for (int i = 0; i < words.size(); i++) {
+            if (!words.get(i).equals(verticalWords.get(i))) {
+                return false;
             }
         }
-        keyToOrders.put(oldKey, ordersCopy);
-    }
-    
-    public int[] getOrdersAtPrice(String orderType, int price) {
-        String key = toKey(orderType, price);
-        if (!keyToOrders.containsKey(key)) {
-            return new int[0];
-        }
-        List<Order> orders = keyToOrders.get(key);
-        int[] result = new int[orders.size()];
-        int index = 0;
-        for (Order order : orders) {
-            result[index++] = order.orderId;
-        }
-        return result;
-    }
-
-    private String toKey(String orderType, int price) {
-        return orderType + price;
+        return true;
     }
 }
+
+// class OrderManagementSystem {
+//     class Order {
+//         int orderId;
+//         String orderType;
+//         int price;
+//         public Order(int orderId, String orderType, int price) {
+//             this.orderId = orderId;
+//             this.orderType = orderType;
+//             this.price = price;
+//         }
+//     }
+
+//     private Map<String, List<Order>> keyToOrders;
+//     private Map<Integer, String> orderIdToKey;
+//     public OrderManagementSystem() {
+//         keyToOrders = new HashMap<>();
+//         orderIdToKey = new HashMap<>();
+//     }
+    
+//     public void addOrder(int orderId, String orderType, int price) {
+//         String key = toKey(orderType, price);
+//         if (!keyToOrders.containsKey(key)) {
+//             keyToOrders.put(key, new ArrayList<>());
+//         }
+//         keyToOrders.get(key).add(new Order(orderId, orderType, price));
+//         orderIdToKey.put(orderId, key);
+//     }
+    
+//     public void modifyOrder(int orderId, int newPrice) {
+//         String oldKey = orderIdToKey.get(orderId);
+//         String orderType = "buy";
+//         if (oldKey.startsWith("sell")) {
+//             orderType = "sell";
+//         }
+//         cancelOrder(orderId);
+//         addOrder(orderId, orderType, newPrice);
+//     }
+    
+//     public void cancelOrder(int orderId) {
+//         String oldKey = orderIdToKey.get(orderId);
+//         orderIdToKey.remove(orderId);
+//         List<Order> orders = keyToOrders.get(oldKey);
+//         List<Order> ordersCopy = new ArrayList<>();
+//         for (Order order : orders) {
+//             if (order.orderId != orderId) {
+//                 ordersCopy.add(order);
+//             }
+//         }
+//         keyToOrders.put(oldKey, ordersCopy);
+//     }
+    
+//     public int[] getOrdersAtPrice(String orderType, int price) {
+//         String key = toKey(orderType, price);
+//         if (!keyToOrders.containsKey(key)) {
+//             return new int[0];
+//         }
+//         List<Order> orders = keyToOrders.get(key);
+//         int[] result = new int[orders.size()];
+//         int index = 0;
+//         for (Order order : orders) {
+//             result[index++] = order.orderId;
+//         }
+//         return result;
+//     }
+
+//     private String toKey(String orderType, int price) {
+//         return orderType + price;
+//     }
+// }
 
 
 // class Solution {
@@ -1356,17 +1378,19 @@ class ListNode {
 
 class Node {
     public int val;
-    public List<Node> children;
-    public Node() {
-        children = new ArrayList<Node>();
-    }
+    public Node left;
+    public Node right;
+
+    public Node() {}
+
     public Node(int _val) {
         val = _val;
-        children = new ArrayList<Node>();
     }
-    public Node(int _val,ArrayList<Node> _children) {
+
+    public Node(int _val,Node _left,Node _right) {
         val = _val;
-        children = _children;
+        left = _left;
+        right = _right;
     }
 }
 
