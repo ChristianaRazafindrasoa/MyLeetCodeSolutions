@@ -3,26 +3,50 @@ package com.leetcode;
 import java.util.*;
 
 class Solution {
-    public boolean validWordSquare(List<String> words) {
-        List<String> verticalWords = new ArrayList<>();
-        for (int i = 0; i < words.get(0).length(); i++) {
-            StringBuilder sb = new StringBuilder();
-            for (String word : words) {
-                if (i < word.length()) {
-                    sb.append(word.charAt(i));
-                }
-            }
-            verticalWords.add(sb.toString());
+    public int[] toArray(Node head) {
+        int[] result = getArray(head);
+        return result;
+    }
+
+    private int[] getArray(Node current) {
+        int count = 1;
+        while (current.next != null) {
+            count++;
+            current = current.next;
         }
 
-        for (int i = 0; i < words.size(); i++) {
-            if (!words.get(i).equals(verticalWords.get(i))) {
-                return false;
-            }
+        int[] result = new int[count];
+        while (current.prev != null) {
+            result[count - 1] = current.val;
+            current = current.prev;
+            count--;
         }
-        return true;
+        result[0] = current.val;
+        return result;
     }
 }
+
+// class Solution {
+//     public boolean validWordSquare(List<String> words) {
+//         List<String> verticalWords = new ArrayList<>();
+//         for (int i = 0; i < words.get(0).length(); i++) {
+//             StringBuilder sb = new StringBuilder();
+//             for (String word : words) {
+//                 if (i < word.length()) {
+//                     sb.append(word.charAt(i));
+//                 }
+//             }
+//             verticalWords.add(sb.toString());
+//         }
+
+//         for (int i = 0; i < words.size(); i++) {
+//             if (!words.get(i).equals(verticalWords.get(i))) {
+//                 return false;
+//             }
+//         }
+//         return true;
+//     }
+// }
 
 // class OrderManagementSystem {
 //     class Order {
