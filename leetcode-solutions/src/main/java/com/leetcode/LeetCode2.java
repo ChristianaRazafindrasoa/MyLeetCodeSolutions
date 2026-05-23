@@ -1,67 +1,117 @@
 package com.leetcode;
 
 import java.util.*;
-// 2 3 4 5 6 7 8 9 10
-// 2   4   6   8   10
-//   3     6     9
-//       5         10
-//           7
 
 class Solution {
-    public int countPrimes(int n) {
-        if (n == 0 || n == 1) {
-            return 0;
+    public int[] sortedSquares(int[] nums) {
+        if (nums.length == 1) {
+            return new int[]{nums[0] * nums[0]};
         }
-        boolean[] isPrime = new boolean[n + 1];
-        for (int i = 2; i <= n; i++) {
-            isPrime[i] = true;
-        }
-        int primes = 0;
-        int sqrt = (int) Math.sqrt((double) n);
-        for (int i = 2; i <= sqrt; i++) {
-            if (isPrime[i]) {
-                primes++;
-                markPrimes(i, isPrime);
+        int right = 0;
+        int min = Integer.MAX_VALUE;
+        for (int i = 0; i < nums.length; i++) {
+            if (Math.abs(nums[i]) < min ) {
+                min = Math.abs(nums[i]);
+                right = i;
             }
         }
-        for (int i = sqrt + 1; i < isPrime.length; i++) {
-            if (isPrime[i]) {
-                primes++;
-            }
-        }
-        return primes;
+        int left = right - 1;
+        return buildSquares(nums, left, right);
     }
 
-    private void markPrimes(int num, boolean[] isPrime) {
-        for (int i = (num * num); i < isPrime.length; i += num) {
-            isPrime[i] = false;
-        }
-    }
-
-    public int countPrimes2(int n) {
-        List<Integer> primes = new ArrayList<>();
-        for (int i = 2; i <= n; i++) {
-            if (isPrime(i, primes)) {
-                primes.add(i);
+    private int[] buildSquares(int[] nums, int left, int right) {
+        int[] squares = new int[nums.length];
+        for (int index = 0; index < squares.length; index++) {
+            if (left < 0) {
+                squares[index] = nums[right] * nums[right];
+                right++;
+            } else if (right >= nums.length) {
+                squares[index] = nums[left] * nums[left];
+                left--;
+            } else {
+                int leftSquare = nums[left] * nums[left];
+                int rightSquare = nums[right] * nums[right];
+                if (leftSquare <= rightSquare) {
+                    squares[index] = leftSquare;
+                    left--;
+                } else {
+                    squares[index] = rightSquare;
+                    right++;
+                }
             }
         }
-        return primes.size();
+        return squares;
     }
 
-    private boolean isPrime(int num, List<Integer> primes) {
-        for (int prime : primes) {
-            if (num % prime == 0) {
-                return false;
-            }
+    public int[] sortedSquares2(int[] nums) {
+        int[] squares = new int[nums.length];
+        for (int index = 0; index < nums.length; index++) {
+            squares[index] = nums[index] * nums[index];
         }
-        return true;
+        Arrays.sort(squares);
+        return squares;
     }
 
     public static void main(String[] args) {
-        System.out.println(new Solution().countPrimes(2));
-        System.out.println(new Solution().countPrimes(1000000));
+        System.out.println(new Solution().sortedSquares(new int[]{-2,-1}));
     }
 }
+
+// class Solution {
+//     public int countPrimes(int n) {
+//         if (n == 0 || n == 1) {
+//             return 0;
+//         }
+//         boolean[] isPrime = new boolean[n + 1];
+//         for (int i = 2; i <= n; i++) {
+//             isPrime[i] = true;
+//         }
+//         int primes = 0;
+//         int sqrt = (int) Math.sqrt((double) n);
+//         for (int i = 2; i <= sqrt; i++) {
+//             if (isPrime[i]) {
+//                 primes++;
+//                 markPrimes(i, isPrime);
+//             }
+//         }
+//         for (int i = sqrt + 1; i < isPrime.length; i++) {
+//             if (isPrime[i]) {
+//                 primes++;
+//             }
+//         }
+//         return primes;
+//     }
+
+//     private void markPrimes(int num, boolean[] isPrime) {
+//         for (int i = (num * num); i < isPrime.length; i += num) {
+//             isPrime[i] = false;
+//         }
+//     }
+
+//     public int countPrimes2(int n) {
+//         List<Integer> primes = new ArrayList<>();
+//         for (int i = 2; i <= n; i++) {
+//             if (isPrime(i, primes)) {
+//                 primes.add(i);
+//             }
+//         }
+//         return primes.size();
+//     }
+
+//     private boolean isPrime(int num, List<Integer> primes) {
+//         for (int prime : primes) {
+//             if (num % prime == 0) {
+//                 return false;
+//             }
+//         }
+//         return true;
+//     }
+
+//     public static void main(String[] args) {
+//         System.out.println(new Solution().countPrimes(2));
+//         System.out.println(new Solution().countPrimes(1000000));
+//     }
+// }
 
 // class Solution {
 //     public int[] toArray(Node head) {
