@@ -1,30 +1,91 @@
 package com.leetcode;
 
 import java.util.*;
+// 2 3 4 5 6 7 8 9 10
+// 2   4   6   8   10
+//   3     6     9
+//       5         10
+//           7
 
 class Solution {
-    public int[] toArray(Node head) {
-        int[] result = getArray(head);
-        return result;
+    public int countPrimes(int n) {
+        if (n == 0 || n == 1) {
+            return 0;
+        }
+        boolean[] isPrime = new boolean[n + 1];
+        for (int i = 2; i <= n; i++) {
+            isPrime[i] = true;
+        }
+        int primes = 0;
+        int sqrt = (int) Math.sqrt((double) n);
+        for (int i = 2; i <= sqrt; i++) {
+            if (isPrime[i]) {
+                primes++;
+                markPrimes(i, isPrime);
+            }
+        }
+        for (int i = sqrt + 1; i < isPrime.length; i++) {
+            if (isPrime[i]) {
+                primes++;
+            }
+        }
+        return primes;
     }
 
-    private int[] getArray(Node current) {
-        int count = 1;
-        while (current.next != null) {
-            count++;
-            current = current.next;
+    private void markPrimes(int num, boolean[] isPrime) {
+        for (int i = (num * num); i < isPrime.length; i += num) {
+            isPrime[i] = false;
         }
+    }
 
-        int[] result = new int[count];
-        while (current.prev != null) {
-            result[count - 1] = current.val;
-            current = current.prev;
-            count--;
+    public int countPrimes2(int n) {
+        List<Integer> primes = new ArrayList<>();
+        for (int i = 2; i <= n; i++) {
+            if (isPrime(i, primes)) {
+                primes.add(i);
+            }
         }
-        result[0] = current.val;
-        return result;
+        return primes.size();
+    }
+
+    private boolean isPrime(int num, List<Integer> primes) {
+        for (int prime : primes) {
+            if (num % prime == 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public static void main(String[] args) {
+        System.out.println(new Solution().countPrimes(2));
+        System.out.println(new Solution().countPrimes(1000000));
     }
 }
+
+// class Solution {
+//     public int[] toArray(Node head) {
+//         int[] result = getArray(head);
+//         return result;
+//     }
+
+//     private int[] getArray(Node current) {
+//         int count = 1;
+//         while (current.next != null) {
+//             count++;
+//             current = current.next;
+//         }
+
+//         int[] result = new int[count];
+//         while (current.prev != null) {
+//             result[count - 1] = current.val;
+//             current = current.prev;
+//             count--;
+//         }
+//         result[0] = current.val;
+//         return result;
+//     }
+// }
 
 // class Solution {
 //     public boolean validWordSquare(List<String> words) {
