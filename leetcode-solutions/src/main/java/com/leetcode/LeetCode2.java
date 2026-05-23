@@ -2,60 +2,82 @@ package com.leetcode;
 
 import java.util.*;
 
-class Solution {
-    public int[] sortedSquares(int[] nums) {
-        if (nums.length == 1) {
-            return new int[]{nums[0] * nums[0]};
+class KthLargest {
+    PriorityQueue<Integer> pq;
+    int k;
+    public KthLargest(int k, int[] nums) {
+        this.k = k;
+        this.pq = new PriorityQueue<>(k);
+        for (int num : nums) {
+            add(num);
         }
-        int right = 0;
-        int min = Integer.MAX_VALUE;
-        for (int i = 0; i < nums.length; i++) {
-            if (Math.abs(nums[i]) < min ) {
-                min = Math.abs(nums[i]);
-                right = i;
-            }
-        }
-        int left = right - 1;
-        return buildSquares(nums, left, right);
     }
-
-    private int[] buildSquares(int[] nums, int left, int right) {
-        int[] squares = new int[nums.length];
-        for (int index = 0; index < squares.length; index++) {
-            if (left < 0) {
-                squares[index] = nums[right] * nums[right];
-                right++;
-            } else if (right >= nums.length) {
-                squares[index] = nums[left] * nums[left];
-                left--;
-            } else {
-                int leftSquare = nums[left] * nums[left];
-                int rightSquare = nums[right] * nums[right];
-                if (leftSquare <= rightSquare) {
-                    squares[index] = leftSquare;
-                    left--;
-                } else {
-                    squares[index] = rightSquare;
-                    right++;
-                }
-            }
+    
+    public int add(int val) {
+        if (pq.size() < k) {
+            pq.add(val);
+        } else if (pq.peek() < val) {
+            pq.poll();
+            pq.add(val);
         }
-        return squares;
-    }
-
-    public int[] sortedSquares2(int[] nums) {
-        int[] squares = new int[nums.length];
-        for (int index = 0; index < nums.length; index++) {
-            squares[index] = nums[index] * nums[index];
-        }
-        Arrays.sort(squares);
-        return squares;
-    }
-
-    public static void main(String[] args) {
-        System.out.println(new Solution().sortedSquares(new int[]{-2,-1}));
+        return pq.peek();
     }
 }
+
+// class Solution {
+//     public int[] sortedSquares(int[] nums) {
+//         if (nums.length == 1) {
+//             return new int[]{nums[0] * nums[0]};
+//         }
+//         int right = 0;
+//         int min = Integer.MAX_VALUE;
+//         for (int i = 0; i < nums.length; i++) {
+//             if (Math.abs(nums[i]) < min ) {
+//                 min = Math.abs(nums[i]);
+//                 right = i;
+//             }
+//         }
+//         int left = right - 1;
+//         return buildSquares(nums, left, right);
+//     }
+
+//     private int[] buildSquares(int[] nums, int left, int right) {
+//         int[] squares = new int[nums.length];
+//         for (int index = 0; index < squares.length; index++) {
+//             if (left < 0) {
+//                 squares[index] = nums[right] * nums[right];
+//                 right++;
+//             } else if (right >= nums.length) {
+//                 squares[index] = nums[left] * nums[left];
+//                 left--;
+//             } else {
+//                 int leftSquare = nums[left] * nums[left];
+//                 int rightSquare = nums[right] * nums[right];
+//                 if (leftSquare <= rightSquare) {
+//                     squares[index] = leftSquare;
+//                     left--;
+//                 } else {
+//                     squares[index] = rightSquare;
+//                     right++;
+//                 }
+//             }
+//         }
+//         return squares;
+//     }
+
+//     public int[] sortedSquares2(int[] nums) {
+//         int[] squares = new int[nums.length];
+//         for (int index = 0; index < nums.length; index++) {
+//             squares[index] = nums[index] * nums[index];
+//         }
+//         Arrays.sort(squares);
+//         return squares;
+//     }
+
+//     public static void main(String[] args) {
+//         System.out.println(new Solution().sortedSquares(new int[]{-2,-1}));
+//     }
+// }
 
 // class Solution {
 //     public int countPrimes(int n) {
