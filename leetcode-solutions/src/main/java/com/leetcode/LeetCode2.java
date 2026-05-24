@@ -2,27 +2,67 @@ package com.leetcode;
 
 import java.util.*;
 
-class KthLargest {
-    PriorityQueue<Integer> pq;
-    int k;
-    public KthLargest(int k, int[] nums) {
-        this.k = k;
-        this.pq = new PriorityQueue<>(k);
-        for (int num : nums) {
-            add(num);
+class Solution {
+    public int minEatingSpeed(int[] piles, int h) {
+        int min = 1;
+        int max = Integer.MIN_VALUE;
+        for (int pile : piles) {
+            max = Math.max(max, pile);
         }
+        
+        int mid = 0;
+        while (min <= max) {
+            mid = min + (max - min) / 2;
+            int hours = getHours(piles, mid);
+            if (hours <= h) {
+                max = mid - 1;
+            } else if (hours > h) {
+                min = mid + 1;
+            }
+        }
+        return min;
     }
-    
-    public int add(int val) {
-        if (pq.size() < k) {
-            pq.add(val);
-        } else if (pq.peek() < val) {
-            pq.poll();
-            pq.add(val);
+
+    private int getHours(int[] piles, int speed) {
+        int hours = 0;
+        for (int pile : piles) {
+            hours += (pile / speed);
+            if (pile % speed != 0) {
+                hours++;
+            }
         }
-        return pq.peek();
+        return hours;
+    }
+
+    public static void main(String[] args) {
+        System.out.println(new Solution().minEatingSpeed(new int[]{82,37}, 6));
+        System.out.println(new Solution().minEatingSpeed(new int[]{3,6,7,11}, 8));
+        System.out.println(new Solution().minEatingSpeed(new int[]{5}, 4));
+        System.out.println(new Solution().minEatingSpeed(new int[]{312884470}, 312884469));
     }
 }
+
+// class KthLargest {
+//     PriorityQueue<Integer> pq;
+//     int k;
+//     public KthLargest(int k, int[] nums) {
+//         this.k = k;
+//         this.pq = new PriorityQueue<>(k);
+//         for (int num : nums) {
+//             add(num);
+//         }
+//     }
+    
+//     public int add(int val) {
+//         if (pq.size() < k) {
+//             pq.add(val);
+//         } else if (pq.peek() < val) {
+//             pq.poll();
+//             pq.add(val);
+//         }
+//         return pq.peek();
+//     }
+// }
 
 // class Solution {
 //     public int[] sortedSquares(int[] nums) {
