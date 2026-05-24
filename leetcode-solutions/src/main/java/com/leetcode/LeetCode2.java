@@ -3,44 +3,99 @@ package com.leetcode;
 import java.util.*;
 
 class Solution {
-    public int minEatingSpeed(int[] piles, int h) {
-        int min = 1;
-        int max = Integer.MIN_VALUE;
-        for (int pile : piles) {
-            max = Math.max(max, pile);
+    private int[][] DELTAS = new int[][]{{0,1},{1,0}};
+
+    public int maxPathScore(int[][] grid, int k) {
+        Integer[][][] memo = new Integer[k + 1][grid.length][grid[0].length];
+        int maxScore = pathScoreHelper(grid, k, 0, 0, 0, memo);
+        if (maxScore == Integer.MIN_VALUE) {
+            return -1;
         }
-        
-        int mid = 0;
-        while (min <= max) {
-            mid = min + (max - min) / 2;
-            int hours = getHours(piles, mid);
-            if (hours <= h) {
-                max = mid - 1;
-            } else if (hours > h) {
-                min = mid + 1;
-            }
-        }
-        return min;
+        return maxScore;
     }
 
-    private int getHours(int[] piles, int speed) {
-        int hours = 0;
-        for (int pile : piles) {
-            hours += (pile / speed);
-            if (pile % speed != 0) {
-                hours++;
-            }
+    private int pathScoreHelper(
+            int[][] grid, 
+            int k, 
+            int cost, 
+            int x, 
+            int y,
+            Integer[][][] memo) {
+        if (x < 0 || x >= grid.length || y < 0 || y >= grid[0].length) {
+            return Integer.MIN_VALUE;
         }
-        return hours;
+        
+        if (memo[cost][x][y] != null) {
+            return memo[cost][x][y];
+        }
+        if (grid[x][y] == 1 || grid[x][y] == 2) {
+            cost += 1;
+        }
+        if (cost > k) {
+            return Integer.MIN_VALUE;
+        }
+        if (x == grid.length - 1 && y == grid[0].length - 1) {
+            return grid[x][y];
+        }
+        int maxScore = Integer.MIN_VALUE;
+        for (int[] delta : DELTAS) {
+            int scoreFromHere = pathScoreHelper(grid, k, cost, x + delta[0], y + delta[1], memo);
+            if (scoreFromHere == Integer.MIN_VALUE) {
+                continue;
+            }
+            maxScore = Math.max(
+                maxScore, 
+                scoreFromHere + grid[x][y]);
+        }
+        memo[cost][x][y] = maxScore;
+        return maxScore;
     }
 
     public static void main(String[] args) {
-        System.out.println(new Solution().minEatingSpeed(new int[]{82,37}, 6));
-        System.out.println(new Solution().minEatingSpeed(new int[]{3,6,7,11}, 8));
-        System.out.println(new Solution().minEatingSpeed(new int[]{5}, 4));
-        System.out.println(new Solution().minEatingSpeed(new int[]{312884470}, 312884469));
+        System.out.println(new Solution().maxPathScore(new int[][]{{0,1},{2,0}}, 1));
+        System.out.println(new Solution().maxPathScore(new int[][]{{0,1},{1,2}}, 1));
     }
 }
+
+// class Solution {
+//     public int minEatingSpeed(int[] piles, int h) {
+//         int min = 1;
+//         int max = Integer.MIN_VALUE;
+//         for (int pile : piles) {
+//             max = Math.max(max, pile);
+//         }
+        
+//         int mid = 0;
+//         while (min <= max) {
+//             mid = min + (max - min) / 2;
+//             int hours = getHours(piles, mid);
+//             if (hours <= h) {
+//                 max = mid - 1;
+//             } else if (hours > h) {
+//                 min = mid + 1;
+//             }
+//         }
+//         return min;
+//     }
+
+//     private int getHours(int[] piles, int speed) {
+//         int hours = 0;
+//         for (int pile : piles) {
+//             hours += (pile / speed);
+//             if (pile % speed != 0) {
+//                 hours++;
+//             }
+//         }
+//         return hours;
+//     }
+
+//     public static void main(String[] args) {
+//         System.out.println(new Solution().minEatingSpeed(new int[]{82,37}, 6));
+//         System.out.println(new Solution().minEatingSpeed(new int[]{3,6,7,11}, 8));
+//         System.out.println(new Solution().minEatingSpeed(new int[]{5}, 4));
+//         System.out.println(new Solution().minEatingSpeed(new int[]{312884470}, 312884469));
+//     }
+// }
 
 // class KthLargest {
 //     PriorityQueue<Integer> pq;
