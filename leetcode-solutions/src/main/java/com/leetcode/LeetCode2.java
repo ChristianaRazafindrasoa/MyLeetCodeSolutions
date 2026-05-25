@@ -3,83 +3,109 @@ package com.leetcode;
 import java.util.*;
 
 class Solution {
-    public int numBusesToDestination(int[][] routes, int source, int target) {
-        if (source == target) {
+    public long mostPoints(int[][] questions) {
+        return mostPointsHelper(questions, 0, new Long[questions.length]);
+    }
+
+    private long mostPointsHelper(int[][] questions, int index, Long[] memo) {
+        if (index >= questions.length) {
             return 0;
         }
-        Set<Integer> sources = new HashSet<>();
-        Set<Integer> targets = new HashSet<>();
-        List<Set<Integer>> adjList = getAdjList(routes, source, sources, target, targets);
-        if (sources.size() == 0) {
-            return -1;
+        if (memo[index] != null) {
+            return memo[index];
         }
-        return bfs(adjList, sources, targets);
+        int[] question = questions[index];
+        long skip = mostPointsHelper(questions, index + 1, memo);
+        long solve = question[0] + mostPointsHelper(questions, index + question[1] + 1, memo);
+        long maxPoints = Math.max(skip, solve);
+        memo[index] = maxPoints;
+        return maxPoints;
     }
-
-    private int bfs(List<Set<Integer>> adjList, Set<Integer> sources, Set<Integer> targets) {
-        int bus = 1;
-        Queue<Integer> queue = new ArrayDeque<>();
-        Set<Integer> visited = new HashSet<>();
-        queue.addAll(sources);
-        while (!queue.isEmpty()) {
-            int size = queue.size();
-            while (size > 0) {
-                int currentBus = queue.poll();
-                size--;
-                if (targets.contains(currentBus)) {
-                    return bus;
-                }
-                if (!visited.add(currentBus)) {
-                    continue;
-                }
-                for (int neighborBus : adjList.get(currentBus)) {
-                    queue.add(neighborBus);
-                }
-            }
-            bus++;
-        }
-        return -1;
-    }
-
-    private List<Set<Integer>> getAdjList(int[][] routes, int source, Set<Integer> sources, int target, Set<Integer> targets) {
-        Map<Integer, Set<Integer>> stopToBuses = new HashMap<>();
-        List<Set<Integer>> adjList = new ArrayList<>();
-        for (int i = 0; i < routes.length; i++) {
-            adjList.add(new HashSet<>());
-        }
-        for (int bus = 0; bus < routes.length; bus++) {
-            for (int stop : routes[bus]) {
-                stopToBuses.putIfAbsent(stop, new HashSet<>());
-                stopToBuses.get(stop).add(bus);
-            }
-        }
-        for (Set<Integer> buses : stopToBuses.values()) {
-            for (int bus : buses) {
-                adjList.get(bus).addAll(buses);
-            }
-        }
-        for (int bus = 0; bus < routes.length; bus++) {
-            for (int stop : routes[bus]) {
-                if (stop == source) {
-                    sources.add(bus);
-                }
-                if (stop == target) {
-                    targets.add(bus);
-                }
-            }
-        }
-        return adjList;
-    }   
 
     public static void main(String[] args) {
-        System.out.println(new Solution().numBusesToDestination(
-            new int[][]{{1,7},{3,5}}, 5, 5));
-        System.out.println(new Solution().numBusesToDestination(
-            new int[][]{{1,2,7},{3,6,7}}, 1, 6));
-        System.out.println(new Solution().numBusesToDestination(
-            new int[][]{{7,12},{4,5,15},{6},{15,19},{9,12,13}}, 15, 12));
+        System.out.println(new Solution().mostPoints(new int[][]{{3,2},{4,3},{4,4},{2,5}}));
+        System.out.println(new Solution().mostPoints(new int[][]{{1,1},{2,2},{3,3},{4,4},{5,5}}));
     }
 }
+
+// class Solution {
+//     public int numBusesToDestination(int[][] routes, int source, int target) {
+//         if (source == target) {
+//             return 0;
+//         }
+//         Set<Integer> sources = new HashSet<>();
+//         Set<Integer> targets = new HashSet<>();
+//         List<Set<Integer>> adjList = getAdjList(routes, source, sources, target, targets);
+//         if (sources.size() == 0) {
+//             return -1;
+//         }
+//         return bfs(adjList, sources, targets);
+//     }
+
+//     private int bfs(List<Set<Integer>> adjList, Set<Integer> sources, Set<Integer> targets) {
+//         int bus = 1;
+//         Queue<Integer> queue = new ArrayDeque<>();
+//         Set<Integer> visited = new HashSet<>();
+//         queue.addAll(sources);
+//         while (!queue.isEmpty()) {
+//             int size = queue.size();
+//             while (size > 0) {
+//                 int currentBus = queue.poll();
+//                 size--;
+//                 if (targets.contains(currentBus)) {
+//                     return bus;
+//                 }
+//                 if (!visited.add(currentBus)) {
+//                     continue;
+//                 }
+//                 for (int neighborBus : adjList.get(currentBus)) {
+//                     queue.add(neighborBus);
+//                 }
+//             }
+//             bus++;
+//         }
+//         return -1;
+//     }
+
+//     private List<Set<Integer>> getAdjList(int[][] routes, int source, Set<Integer> sources, int target, Set<Integer> targets) {
+//         Map<Integer, Set<Integer>> stopToBuses = new HashMap<>();
+//         List<Set<Integer>> adjList = new ArrayList<>();
+//         for (int i = 0; i < routes.length; i++) {
+//             adjList.add(new HashSet<>());
+//         }
+//         for (int bus = 0; bus < routes.length; bus++) {
+//             for (int stop : routes[bus]) {
+//                 stopToBuses.putIfAbsent(stop, new HashSet<>());
+//                 stopToBuses.get(stop).add(bus);
+//             }
+//         }
+//         for (Set<Integer> buses : stopToBuses.values()) {
+//             for (int bus : buses) {
+//                 adjList.get(bus).addAll(buses);
+//             }
+//         }
+//         for (int bus = 0; bus < routes.length; bus++) {
+//             for (int stop : routes[bus]) {
+//                 if (stop == source) {
+//                     sources.add(bus);
+//                 }
+//                 if (stop == target) {
+//                     targets.add(bus);
+//                 }
+//             }
+//         }
+//         return adjList;
+//     }   
+
+//     public static void main(String[] args) {
+//         System.out.println(new Solution().numBusesToDestination(
+//             new int[][]{{1,7},{3,5}}, 5, 5));
+//         System.out.println(new Solution().numBusesToDestination(
+//             new int[][]{{1,2,7},{3,6,7}}, 1, 6));
+//         System.out.println(new Solution().numBusesToDestination(
+//             new int[][]{{7,12},{4,5,15},{6},{15,19},{9,12,13}}, 15, 12));
+//     }
+// }
 
 // class Solution {
 //     private int[][] DELTAS = new int[][]{{0,1},{1,0}};
