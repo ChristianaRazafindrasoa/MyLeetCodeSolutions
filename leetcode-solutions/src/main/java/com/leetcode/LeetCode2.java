@@ -3,30 +3,62 @@ package com.leetcode;
 import java.util.*;
 
 class Solution {
-    public long mostPoints(int[][] questions) {
-        return mostPointsHelper(questions, 0, new Long[questions.length]);
-    }
-
-    private long mostPointsHelper(int[][] questions, int index, Long[] memo) {
-        if (index >= questions.length) {
-            return 0;
+    public boolean isGood(int[] nums) {
+        int max = 0;
+        for (int num : nums) {
+            max = Math.max(max, num);
         }
-        if (memo[index] != null) {
-            return memo[index];
+        int[] freqs = new int[max + 1];
+        for (int num : nums) {
+            if (num != max && freqs[num] > 0) {
+                return false;
+            }
+            if (num == max && freqs[num] > 1) {
+                return false;
+            }
+            freqs[num]++;
         }
-        int[] question = questions[index];
-        long skip = mostPointsHelper(questions, index + 1, memo);
-        long solve = question[0] + mostPointsHelper(questions, index + question[1] + 1, memo);
-        long maxPoints = Math.max(skip, solve);
-        memo[index] = maxPoints;
-        return maxPoints;
+        if (nums[max] != 2) {
+            return false;
+        }
+        for (int i = 1; i <= max - 1; i++) {
+            if (freqs[i] != 1) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public static void main(String[] args) {
-        System.out.println(new Solution().mostPoints(new int[][]{{3,2},{4,3},{4,4},{2,5}}));
-        System.out.println(new Solution().mostPoints(new int[][]{{1,1},{2,2},{3,3},{4,4},{5,5}}));
+        System.out.println(new Solution().isGood(new int[]{1,3,3,2}));
     }
 }
+
+// class Solution {
+//     public long mostPoints(int[][] questions) {
+//         return mostPointsHelper(questions, 0, new Long[questions.length]);
+//     }
+
+//     private long mostPointsHelper(int[][] questions, int index, Long[] memo) {
+//         if (index >= questions.length) {
+//             return 0;
+//         }
+//         if (memo[index] != null) {
+//             return memo[index];
+//         }
+//         int[] question = questions[index];
+//         long skip = mostPointsHelper(questions, index + 1, memo);
+//         long solve = question[0] + mostPointsHelper(questions, index + question[1] + 1, memo);
+//         long maxPoints = Math.max(skip, solve);
+//         memo[index] = maxPoints;
+//         return maxPoints;
+//     }
+
+//     public static void main(String[] args) {
+//         System.out.println(new Solution().mostPoints(new int[][]{{3,2},{4,3},{4,4},{2,5}}));
+//         System.out.println(new Solution().mostPoints(new int[][]{{1,1},{2,2},{3,3},{4,4},{5,5}}));
+//     }
+// }
 
 // class Solution {
 //     public int numBusesToDestination(int[][] routes, int source, int target) {
