@@ -3,59 +3,138 @@ package com.leetcode;
 import java.util.*;
 
 class Solution {
-    private int[][] DELTAS = new int[][]{{0,1},{1,0}};
-
-    public int maxPathScore(int[][] grid, int k) {
-        Integer[][][] memo = new Integer[k + 1][grid.length][grid[0].length];
-        int maxScore = pathScoreHelper(grid, k, 0, 0, 0, memo);
-        if (maxScore == Integer.MIN_VALUE) {
+    public int numBusesToDestination(int[][] routes, int source, int target) {
+        if (source == target) {
+            return 0;
+        }
+        Set<Integer> sources = new HashSet<>();
+        Set<Integer> targets = new HashSet<>();
+        List<Set<Integer>> adjList = getAdjList(routes, source, sources, target, targets);
+        if (sources.size() == 0) {
             return -1;
         }
-        return maxScore;
+        return bfs(adjList, sources, targets);
     }
 
-    private int pathScoreHelper(
-            int[][] grid, 
-            int k, 
-            int cost, 
-            int x, 
-            int y,
-            Integer[][][] memo) {
-        if (x < 0 || x >= grid.length || y < 0 || y >= grid[0].length) {
-            return Integer.MIN_VALUE;
-        }
-        
-        if (memo[cost][x][y] != null) {
-            return memo[cost][x][y];
-        }
-        if (grid[x][y] == 1 || grid[x][y] == 2) {
-            cost += 1;
-        }
-        if (cost > k) {
-            return Integer.MIN_VALUE;
-        }
-        if (x == grid.length - 1 && y == grid[0].length - 1) {
-            return grid[x][y];
-        }
-        int maxScore = Integer.MIN_VALUE;
-        for (int[] delta : DELTAS) {
-            int scoreFromHere = pathScoreHelper(grid, k, cost, x + delta[0], y + delta[1], memo);
-            if (scoreFromHere == Integer.MIN_VALUE) {
-                continue;
+    private int bfs(List<Set<Integer>> adjList, Set<Integer> sources, Set<Integer> targets) {
+        int bus = 1;
+        Queue<Integer> queue = new ArrayDeque<>();
+        Set<Integer> visited = new HashSet<>();
+        queue.addAll(sources);
+        while (!queue.isEmpty()) {
+            int size = queue.size();
+            while (size > 0) {
+                int currentBus = queue.poll();
+                size--;
+                if (targets.contains(currentBus)) {
+                    return bus;
+                }
+                if (!visited.add(currentBus)) {
+                    continue;
+                }
+                for (int neighborBus : adjList.get(currentBus)) {
+                    queue.add(neighborBus);
+                }
             }
-            maxScore = Math.max(
-                maxScore, 
-                scoreFromHere + grid[x][y]);
+            bus++;
         }
-        memo[cost][x][y] = maxScore;
-        return maxScore;
+        return -1;
     }
+
+    private List<Set<Integer>> getAdjList(int[][] routes, int source, Set<Integer> sources, int target, Set<Integer> targets) {
+        Map<Integer, Set<Integer>> stopToBuses = new HashMap<>();
+        List<Set<Integer>> adjList = new ArrayList<>();
+        for (int i = 0; i < routes.length; i++) {
+            adjList.add(new HashSet<>());
+        }
+        for (int bus = 0; bus < routes.length; bus++) {
+            for (int stop : routes[bus]) {
+                stopToBuses.putIfAbsent(stop, new HashSet<>());
+                stopToBuses.get(stop).add(bus);
+            }
+        }
+        for (Set<Integer> buses : stopToBuses.values()) {
+            for (int bus : buses) {
+                adjList.get(bus).addAll(buses);
+            }
+        }
+        for (int bus = 0; bus < routes.length; bus++) {
+            for (int stop : routes[bus]) {
+                if (stop == source) {
+                    sources.add(bus);
+                }
+                if (stop == target) {
+                    targets.add(bus);
+                }
+            }
+        }
+        return adjList;
+    }   
 
     public static void main(String[] args) {
-        System.out.println(new Solution().maxPathScore(new int[][]{{0,1},{2,0}}, 1));
-        System.out.println(new Solution().maxPathScore(new int[][]{{0,1},{1,2}}, 1));
+        System.out.println(new Solution().numBusesToDestination(
+            new int[][]{{1,7},{3,5}}, 5, 5));
+        System.out.println(new Solution().numBusesToDestination(
+            new int[][]{{1,2,7},{3,6,7}}, 1, 6));
+        System.out.println(new Solution().numBusesToDestination(
+            new int[][]{{7,12},{4,5,15},{6},{15,19},{9,12,13}}, 15, 12));
     }
 }
+
+// class Solution {
+//     private int[][] DELTAS = new int[][]{{0,1},{1,0}};
+
+//     public int maxPathScore(int[][] grid, int k) {
+//         Integer[][][] memo = new Integer[k + 1][grid.length][grid[0].length];
+//         int maxScore = pathScoreHelper(grid, k, 0, 0, 0, memo);
+//         if (maxScore == Integer.MIN_VALUE) {
+//             return -1;
+//         }
+//         return maxScore;
+//     }
+
+//     private int pathScoreHelper(
+//             int[][] grid, 
+//             int k, 
+//             int cost, 
+//             int x, 
+//             int y,
+//             Integer[][][] memo) {
+//         if (x < 0 || x >= grid.length || y < 0 || y >= grid[0].length) {
+//             return Integer.MIN_VALUE;
+//         }
+        
+//         if (memo[cost][x][y] != null) {
+//             return memo[cost][x][y];
+//         }
+//         if (grid[x][y] == 1 || grid[x][y] == 2) {
+//             cost += 1;
+//         }
+//         if (cost > k) {
+//             return Integer.MIN_VALUE;
+//         }
+//         if (x == grid.length - 1 && y == grid[0].length - 1) {
+//             return grid[x][y];
+//         }
+//         int maxScore = Integer.MIN_VALUE;
+//         for (int[] delta : DELTAS) {
+//             int scoreFromHere = pathScoreHelper(grid, k, cost, x + delta[0], y + delta[1], memo);
+//             if (scoreFromHere == Integer.MIN_VALUE) {
+//                 continue;
+//             }
+//             maxScore = Math.max(
+//                 maxScore, 
+//                 scoreFromHere + grid[x][y]);
+//         }
+//         memo[cost][x][y] = maxScore;
+//         return maxScore;
+//     }
+
+//     public static void main(String[] args) {
+//         System.out.println(new Solution().maxPathScore(new int[][]{{0,1},{2,0}}, 1));
+//         System.out.println(new Solution().maxPathScore(new int[][]{{0,1},{1,2}}, 1));
+//     }
+// }
 
 // class Solution {
 //     public int minEatingSpeed(int[] piles, int h) {
