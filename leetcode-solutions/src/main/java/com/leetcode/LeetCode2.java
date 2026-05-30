@@ -3,36 +3,134 @@ package com.leetcode;
 import java.util.*;
 
 class Solution {
-    public boolean isGood(int[] nums) {
-        int max = 0;
-        for (int num : nums) {
-            max = Math.max(max, num);
-        }
-        int[] freqs = new int[max + 1];
-        for (int num : nums) {
-            if (num != max && freqs[num] > 0) {
-                return false;
+    public String convertToTitle(int columnNumber) {
+        StringBuilder sb = new StringBuilder();
+        int num = columnNumber;
+        while (num != 0) {
+            int mod = num % 26;
+            if (mod == 0) {
+                sb.append('Z');
+                num--;
+            } else {
+                sb.append((char) (mod + 64));
             }
-            if (num == max && freqs[num] > 1) {
-                return false;
-            }
-            freqs[num]++;
+            num /= 26;
         }
-        if (nums[max] != 2) {
-            return false;
-        }
-        for (int i = 1; i <= max - 1; i++) {
-            if (freqs[i] != 1) {
-                return false;
-            }
-        }
-        return true;
+        return sb.reverse().toString();
     }
 
     public static void main(String[] args) {
-        System.out.println(new Solution().isGood(new int[]{1,3,3,2}));
+        System.out.println(new Solution().convertToTitle(2700000));
+        System.out.println(new Solution().convertToTitle(52));
     }
 }
+
+//class Solution {
+//    public String decodeString(String s) {
+//        String result = "";
+//        StringPtr ptr = new StringPtr(s, 0);
+//        while (ptr.index < s.length()) {
+//            result += parse(ptr);
+//        }
+//        return result;
+//    }
+//
+//    private class StringPtr {
+//        String s;
+//        int index;
+//        public StringPtr(String s, int index) {
+//            this.s = s;
+//            this.index = index;
+//        }
+//    }
+//
+//    private String parse(StringPtr ptr) {
+//        char c = ptr.s.charAt(ptr.index);
+//        String result = "";
+//        if (Character.isAlphabetic(c)) {
+//            result += consecutiveLetters(ptr);
+//        }
+//        if (ptr.s.charAt(ptr.index) == ']') {
+//            ptr.index++;
+//            return result;
+//        }
+//        if (Character.isDigit(ptr.s.charAt(ptr.index))) {
+//            String digits = consecutiveDigits(ptr);
+//            int multiplier = Integer.parseInt(digits);
+//            ptr.index++; // Open square bracket.
+//            String content = parse(ptr);
+//            ptr.index++; // Closing square bracket.
+//            return result += multiply(content, multiplier);
+//        }
+//
+//        throw new IllegalStateException("not reachable");
+//    }
+//
+//    private String multiply(String str, int n) {
+//        StringBuilder sb = new StringBuilder(str.length()*n);
+//        for (int i = 0; i < n; i++) {
+//            sb.append(str);
+//        }
+//        return sb.toString();
+//    }
+//
+//    private String consecutiveLetters(StringPtr ptr) {
+//        StringBuilder sb = new StringBuilder();
+//        while (ptr.index < ptr.s.length() &&
+//            Character.isAlphabetic(ptr.s.charAt(ptr.index))) {
+//                sb.append(ptr.s.charAt(ptr.index));
+//                ptr.index++;
+//        }
+//        return sb.toString();
+//    }
+//
+//    private String consecutiveDigits(StringPtr ptr) {
+//        StringBuilder sb = new StringBuilder();
+//        while (ptr.index < ptr.s.length() &&
+//            Character.isDigit(ptr.s.charAt(ptr.index))) {
+//                sb.append(ptr.s.charAt(ptr.index));
+//                ptr.index++;
+//        }
+//        return sb.toString();
+//    }
+//
+//    public static void main(String[] args) {
+//        String fo = new Solution().decodeString("3[a]2[bc]");
+//        int bar = 0;
+//    }
+//}
+
+// class Solution {
+//     public boolean isGood(int[] nums) {
+//         int max = 0;
+//         for (int num : nums) {
+//             max = Math.max(max, num);
+//         }
+//         int[] freqs = new int[max + 1];
+//         for (int num : nums) {
+//             if (num != max && freqs[num] > 0) {
+//                 return false;
+//             }
+//             if (num == max && freqs[num] > 1) {
+//                 return false;
+//             }
+//             freqs[num]++;
+//         }
+//         if (nums[max] != 2) {
+//             return false;
+//         }
+//         for (int i = 1; i <= max - 1; i++) {
+//             if (freqs[i] != 1) {
+//                 return false;
+//             }
+//         }
+//         return true;
+//     }
+
+//     public static void main(String[] args) {
+//         System.out.println(new Solution().isGood(new int[]{1,3,3,2}));
+//     }
+// }
 
 // class Solution {
 //     public long mostPoints(int[][] questions) {
