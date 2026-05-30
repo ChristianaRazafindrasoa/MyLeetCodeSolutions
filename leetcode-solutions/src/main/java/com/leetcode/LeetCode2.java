@@ -3,23 +3,96 @@ package com.leetcode;
 import java.util.*;
 
 class Solution {
-    public int getCommon(int[] nums1, int[] nums2) {
-        int index1 = 0;
-        int index2 = 0;
-        while (index1 < nums1.length && index2 < nums2.length) {
-            int num1 = nums1[index1];
-            int num2 = nums2[index2];
-            if (num1 == num2) {
-                return num1;
-            } else if (num1 < num2) {
-                index1++;
+    public int shipWithinDays(int[] weights, int days) {
+        int min = 1;
+        int max = 0;
+        for (int weight : weights) {
+            max += weight;
+        }
+
+        while (min < max) {
+            int mid = min + (max - min) / 2;
+            int currentDays = getDays(weights, mid);
+            if (currentDays > days) {
+                min = mid + 1;
             } else {
-                index2++;
+                max = mid;
             }
         }
-        return -1;
+        return min;
+    }
+
+    private int getDays(int[] weights, int capacity) {
+        int days = 1;
+        int currentWeight = 0;
+        for (int weight : weights) {
+            if (weight > capacity) {
+                return Integer.MAX_VALUE;
+            }
+            currentWeight += weight;
+            if (currentWeight > capacity) {
+                currentWeight = weight;
+                days++;
+            }
+        }
+        return days;
+    }
+
+    public static void main(String[] args) {
+        System.out.println(new Solution().shipWithinDays(new int[]{3,2,2,4,1,4}, 3));
+        System.out.println(new Solution().shipWithinDays(new int[]{1,2,3,1,1}, 4));
     }
 }
+
+//class Solution {
+//    public int rob(int[] nums) {
+//        if (nums.length == 1) {
+//            return nums[0];
+//        }
+//        int rob = robHelper(nums, 0, nums.length - 1, new Integer[nums.length + 1][nums.length + 1]);
+//        int skip = robHelper(nums, 1, nums.length, new Integer[nums.length + 1][nums.length + 1]);
+//        return Math.max(rob, skip);
+//    }
+//
+//    private int robHelper(int[] nums, int index, int end, Integer[][] memo) {
+//        if (index >= end) {
+//            return 0;
+//        }
+//        if (memo[index][end] != null) {
+//            return memo[index][end];
+//        }
+//        int rob = nums[index] + robHelper(nums, index + 2, end, memo);
+//        int skip = robHelper(nums, index + 1, end, memo);
+//        int max = Math.max(rob, skip);
+//        memo[index][end] = max;
+//        return max;
+//    }
+//
+//    public static void main(String[] args) {
+//        System.out.println(new Solution().rob(new int[]{1,2,3}));
+//        System.out.println(new Solution().rob(new int[]{1,2,3,1}));
+//        System.out.println(new Solution().rob(new int[]{2,3,2}));
+//    }
+//}
+
+//class Solution {
+//    public int getCommon(int[] nums1, int[] nums2) {
+//        int index1 = 0;
+//        int index2 = 0;
+//        while (index1 < nums1.length && index2 < nums2.length) {
+//            int num1 = nums1[index1];
+//            int num2 = nums2[index2];
+//            if (num1 == num2) {
+//                return num1;
+//            } else if (num1 < num2) {
+//                index1++;
+//            } else {
+//                index2++;
+//            }
+//        }
+//        return -1;
+//    }
+//}
 
 //class Solution {
 //    public String convertToTitle(int columnNumber) {
