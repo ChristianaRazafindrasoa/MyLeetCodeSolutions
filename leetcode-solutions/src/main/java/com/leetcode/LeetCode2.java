@@ -3,27 +3,46 @@ package com.leetcode;
 import java.util.*;
 
 class Solution {
-    public String convertToTitle(int columnNumber) {
-        StringBuilder sb = new StringBuilder();
-        int num = columnNumber;
-        while (num != 0) {
-            int mod = num % 26;
-            if (mod == 0) {
-                sb.append('Z');
-                num--;
+    public int getCommon(int[] nums1, int[] nums2) {
+        int index1 = 0;
+        int index2 = 0;
+        while (index1 < nums1.length && index2 < nums2.length) {
+            int num1 = nums1[index1];
+            int num2 = nums2[index2];
+            if (num1 == num2) {
+                return num1;
+            } else if (num1 < num2) {
+                index1++;
             } else {
-                sb.append((char) (mod + 64));
+                index2++;
             }
-            num /= 26;
         }
-        return sb.reverse().toString();
-    }
-
-    public static void main(String[] args) {
-        System.out.println(new Solution().convertToTitle(2700000));
-        System.out.println(new Solution().convertToTitle(52));
+        return -1;
     }
 }
+
+//class Solution {
+//    public String convertToTitle(int columnNumber) {
+//        StringBuilder sb = new StringBuilder();
+//        int num = columnNumber;
+//        while (num != 0) {
+//            int mod = num % 26;
+//            if (mod == 0) {
+//                sb.append('Z');
+//                num--;
+//            } else {
+//                sb.append((char) (mod + 64));
+//            }
+//            num /= 26;
+//        }
+//        return sb.reverse().toString();
+//    }
+//
+//    public static void main(String[] args) {
+//        System.out.println(new Solution().convertToTitle(2700000));
+//        System.out.println(new Solution().convertToTitle(52));
+//    }
+//}
 
 //class Solution {
 //    public String decodeString(String s) {
