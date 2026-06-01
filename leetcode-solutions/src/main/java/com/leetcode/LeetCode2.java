@@ -3,46 +3,107 @@ package com.leetcode;
 import java.util.*;
 
 class Solution {
-    public int shipWithinDays(int[] weights, int days) {
-        int min = 1;
-        int max = 0;
-        for (int weight : weights) {
-            max += weight;
-        }
-
-        while (min < max) {
-            int mid = min + (max - min) / 2;
-            int currentDays = getDays(weights, mid);
-            if (currentDays > days) {
-                min = mid + 1;
+    public int findKthPositive(int[] arr, int k) {
+        int left = 0;
+        int right = arr.length - 1;
+        while (left < right) {
+            int mid = left + (right - left) / 2;
+            if (arr[mid] - (mid + 1) >= k) {
+                right = mid;
             } else {
-                max = mid;
+                left = mid + 1;
             }
         }
-        return min;
-    }
 
-    private int getDays(int[] weights, int capacity) {
-        int days = 1;
-        int currentWeight = 0;
-        for (int weight : weights) {
-            if (weight > capacity) {
-                return Integer.MAX_VALUE;
-            }
-            currentWeight += weight;
-            if (currentWeight > capacity) {
-                currentWeight = weight;
-                days++;
-            }
+        int missingLeft = arr[left] - left - 1;
+        if (missingLeft >= k) {
+            return arr[left] - (missingLeft - k) - 1;
         }
-        return days;
+        int missingRight = k - missingLeft;
+        return arr[left] + missingRight;
     }
 
     public static void main(String[] args) {
-        System.out.println(new Solution().shipWithinDays(new int[]{3,2,2,4,1,4}, 3));
-        System.out.println(new Solution().shipWithinDays(new int[]{1,2,3,1,1}, 4));
+        System.out.println(new Solution().findKthPositive(new int[]{2,3,4,7,11}, 5));
+        System.out.println(new Solution().findKthPositive(new int[]{1,2,3,4}, 2));
+        System.out.println(new Solution().findKthPositive(new int[]{5,6,7,8,9}, 9));
     }
 }
+
+//class Solution {
+//    public int maxFrequency(int[] nums, int k) {
+//        Arrays.sort(nums);
+//        int max = 0;
+//        int diff = 0;
+//        int freq = 0;
+//        int left = nums.length - 1;
+//        int right = nums.length - 1;
+//        while (left >= 0 && right >= 0) {
+//            int delta = nums[right] - nums[left];
+//            if ((diff + delta) <= k) {
+//                diff += delta;
+//                freq++;
+//                left--;
+//                max = Math.max(max, freq);
+//            } else {
+//                delta = nums[right] - nums[right - 1];
+//                diff -= (delta * (right - left - 1));
+//                freq--;
+//                right--;
+//            }
+//        }
+//        return max;
+//    }
+//
+//    public static void main(String[] args) {
+//        System.out.println(new Solution().maxFrequency(new int[]{1,2,4}, 5));
+//        System.out.println(new Solution().maxFrequency(new int[]{1,4,8,13}, 5));
+//        System.out.println(new Solution().maxFrequency(new int[]{3,9,6}, 2));
+//        System.out.println(new Solution().maxFrequency(new int[]{9930,9923,9983,9997,9934,9952,9945,9914,9985,9982,9970,9932,9985,9902,9975,9990,9922,9990,9994,9937,9996,9964,9943,9963,9911,9925,9935,9945,9933,9916,9930,9938,10000,9916,9911,9959,9957,9907,9913,9916,9993,9930,9975,9924,9988,9923,9910,9925,9977,9981,9927,9930,9927,9925,9923,9904,9928,9928,9986,9903,9985,9954,9938,9911,9952,9974,9926,9920,9972,9983,9973,9917,9995,9973,9977,9947,9936,9975,9954,9932,9964,9972,9935,9946,9966}, 3056));
+//    }
+//}
+
+//class Solution {
+//    public int shipWithinDays(int[] weights, int days) {
+//        int min = 1;
+//        int max = 0;
+//        for (int weight : weights) {
+//            max += weight;
+//        }
+//
+//        while (min < max) {
+//            int mid = min + (max - min) / 2;
+//            int currentDays = getDays(weights, mid);
+//            if (currentDays > days) {
+//                min = mid + 1;
+//            } else {
+//                max = mid;
+//            }
+//        }
+//        return min;
+//    }
+//
+//    private int getDays(int[] weights, int capacity) {
+//        int days = 1;
+//        int currentWeight = 0;
+//        for (int weight : weights) {
+//            if (weight > capacity) {
+//                return Integer.MAX_VALUE;
+//            }
+//            currentWeight += weight;
+//            if (currentWeight > capacity) {
+//                currentWeight = weight;
+//                days++;
+//            }
+//        }
+//        return days;
+//    }
+//
+//    public static void main(String[] args) {
+//        System.out.println(new Solution().shipWithinDays(new int[]{3,2,2,4,1,4}, 3));
+//        System.out.println(new Solution().shipWithinDays(new int[]{1,2,3,1,1}, 4));
+//    }
+//}
 
 //class Solution {
 //    public int rob(int[] nums) {
