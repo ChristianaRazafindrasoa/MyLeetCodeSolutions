@@ -3,32 +3,104 @@ package com.leetcode;
 import java.util.*;
 
 class Solution {
-    public int findKthPositive(int[] arr, int k) {
-        int left = 0;
-        int right = arr.length - 1;
-        while (left < right) {
-            int mid = left + (right - left) / 2;
-            if (arr[mid] - (mid + 1) >= k) {
-                right = mid;
-            } else {
-                left = mid + 1;
+    class Location {
+        int x;
+        int y;
+        public Location(int x, int y) {
+            this.x = x;
+            this.y = y;
+        }
+        public String toString() {
+            return x + "," + y;
+        }
+        public List<Location> neighbors() {
+            return List.of(
+                    new Location(this.x, this.y - 1),
+                    new Location(this.x, this.y + 1),
+                    new Location(this.x - 1, this.y),
+                    new Location(this.x + 1, this.y));
+        }
+    }
+
+    public int orangesRotting(int[][] grid) {
+        Queue<Location> queue = new ArrayDeque<>();
+        int orangeCount = 0;
+        for (int row = 0; row < grid.length; row++) {
+            for (int col = 0; col < grid[row].length; col++) {
+                if (grid[row][col] != 0) {
+                    orangeCount++;
+                }
+                if (grid[row][col] == 2) {
+                    queue.add(new Location(row, col));
+                }
             }
         }
+        return bfs(grid, orangeCount, queue);
+    }
 
-        int missingLeft = arr[left] - left - 1;
-        if (missingLeft >= k) {
-            return arr[left] - (missingLeft - k) - 1;
+    private int bfs(int[][] grid, int orangeCount, Queue<Location> queue) {
+        Set<String> visited = new HashSet<>();
+        int minutes = 0;
+        while (!queue.isEmpty()) {
+            int size = queue.size();
+            while (size > 0) {
+                Location current = queue.poll();
+                size--;
+                if (!visited.add(current.toString())) {
+                    continue;
+                }
+                if (visited.size() == orangeCount) {
+                    return minutes;
+                }
+                for (Location neighbor : current.neighbors()) {
+                    if (isInsideGrid(grid, neighbor) && grid[neighbor.x][neighbor.y] == 1) {
+                        queue.add(neighbor);
+                    }
+                }
+            }
+            minutes++;
         }
-        int missingRight = k - missingLeft;
-        return arr[left] + missingRight;
+        return -1;
+    }
+
+    private boolean isInsideGrid(int[][] grid, Location current) {
+        return current.x >= 0 && current.y >= 0 &&
+                current.x < grid.length && current.y < grid[0].length;
     }
 
     public static void main(String[] args) {
-        System.out.println(new Solution().findKthPositive(new int[]{2,3,4,7,11}, 5));
-        System.out.println(new Solution().findKthPositive(new int[]{1,2,3,4}, 2));
-        System.out.println(new Solution().findKthPositive(new int[]{5,6,7,8,9}, 9));
+        System.out.println(new Solution().orangesRotting(new int[][]{{2,1,1},{1,1,0},{0,1,1}}));
+        System.out.println(new Solution().orangesRotting(new int[][]{{2,1,1},{0,1,1},{1,0,1}}));
     }
 }
+
+//class Solution {
+//    public int findKthPositive(int[] arr, int k) {
+//        int left = 0;
+//        int right = arr.length - 1;
+//        while (left < right) {
+//            int mid = left + (right - left) / 2;
+//            if (arr[mid] - (mid + 1) >= k) {
+//                right = mid;
+//            } else {
+//                left = mid + 1;
+//            }
+//        }
+//
+//        int missingLeft = arr[left] - left - 1;
+//        if (missingLeft >= k) {
+//            return arr[left] - (missingLeft - k) - 1;
+//        }
+//        int missingRight = k - missingLeft;
+//        return arr[left] + missingRight;
+//    }
+//
+//    public static void main(String[] args) {
+//        System.out.println(new Solution().findKthPositive(new int[]{2,3,4,7,11}, 5));
+//        System.out.println(new Solution().findKthPositive(new int[]{1,2,3,4}, 2));
+//        System.out.println(new Solution().findKthPositive(new int[]{5,6,7,8,9}, 9));
+//    }
+//}
 
 //class Solution {
 //    public int maxFrequency(int[] nums, int k) {
