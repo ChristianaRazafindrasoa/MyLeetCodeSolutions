@@ -3,50 +3,94 @@ package com.leetcode;
 import java.util.*;
 
 class Solution {
-    public boolean carPooling(int[][] trips, int capacity) {
-        int[] locations = new int[1001];
-        for (int[] trip : trips) {
-            int num = trip[0];
-            int from = trip[1];
-            int to = trip[2];
-            locations[from] += num;
-            locations[to] -= num;
+    public int splitArray(int[] nums, int k) {
+        int min = 0;
+        int max = 0;
+        for (int i = 0; i < nums.length; i++) {
+            max += nums[i];
         }
-        int passengers = 0;
-        for (int location : locations) {
-            passengers += location;
-            if (passengers > capacity) {
-                return false;
+
+        while (min < max) {
+            int mid = min + (max - min) / 2;
+            int splits = getSplits(nums, mid);
+            if (splits > k) {
+                min = mid + 1;
+            } else {
+                max = mid;
             }
         }
-        return true;
+        return min;
     }
 
-    public boolean carPooling2(int[][] trips, int capacity) {
-        TreeMap<Integer, Integer> locationToSeats = new TreeMap<>();
-        for (int[] trip : trips) {
-            int num = trip[0];
-            int from = trip[1];
-            int to = trip[2] + 1;
-            locationToSeats.putIfAbsent(from, 0);
-            locationToSeats.put(from, locationToSeats.get(from) + num);
-            locationToSeats.putIfAbsent(to, 0);
-            locationToSeats.put(to, locationToSeats.get(to) - num);
-        }
-        int passengers = 0;
-        for (int value : locationToSeats.values()) {
-            passengers += value;
-            if (passengers > capacity) {
-                return false;
+    private int getSplits(int[] nums, int sum) {
+        int splits = 1;
+        int currentSum = 0;
+        for (int i = 0; i < nums.length; i++) {
+            if (nums[i] > sum) {
+                return Integer.MAX_VALUE;
+            }
+            if (currentSum + nums[i] > sum) {
+                splits++;
+                currentSum = nums[i];
+            } else {
+                currentSum += nums[i];
             }
         }
-        return true;
+        return splits;
     }
 
     public static void main(String[] args) {
-        System.out.println(new Solution().carPooling(new int[][]{{2,1,5},{3,3,7}}, 4));
+        System.out.println(new Solution().splitArray(new int[]{1,4,4}, 3));
+        System.out.println(new Solution().splitArray(new int[]{1,2,3,4,5}, 2));
+        System.out.println(new Solution().splitArray(new int[]{1,2,3,4,5}, 3));
     }
 }
+
+//class Solution {
+//    public boolean carPooling(int[][] trips, int capacity) {
+//        int[] locations = new int[1001];
+//        for (int[] trip : trips) {
+//            int num = trip[0];
+//            int from = trip[1];
+//            int to = trip[2];
+//            locations[from] += num;
+//            locations[to] -= num;
+//        }
+//        int passengers = 0;
+//        for (int location : locations) {
+//            passengers += location;
+//            if (passengers > capacity) {
+//                return false;
+//            }
+//        }
+//        return true;
+//    }
+//
+//    public boolean carPooling2(int[][] trips, int capacity) {
+//        TreeMap<Integer, Integer> locationToSeats = new TreeMap<>();
+//        for (int[] trip : trips) {
+//            int num = trip[0];
+//            int from = trip[1];
+//            int to = trip[2] + 1;
+//            locationToSeats.putIfAbsent(from, 0);
+//            locationToSeats.put(from, locationToSeats.get(from) + num);
+//            locationToSeats.putIfAbsent(to, 0);
+//            locationToSeats.put(to, locationToSeats.get(to) - num);
+//        }
+//        int passengers = 0;
+//        for (int value : locationToSeats.values()) {
+//            passengers += value;
+//            if (passengers > capacity) {
+//                return false;
+//            }
+//        }
+//        return true;
+//    }
+//
+//    public static void main(String[] args) {
+//        System.out.println(new Solution().carPooling(new int[][]{{2,1,5},{3,3,7}}, 4));
+//    }
+//}
 
 //class Solution {
 //    public boolean asteroidsDestroyed(int mass, int[] asteroids) {
