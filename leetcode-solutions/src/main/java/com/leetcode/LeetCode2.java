@@ -3,27 +3,53 @@ package com.leetcode;
 import java.util.*;
 
 class Solution {
-    public int[] leftRightDifference(int[] nums) {
-        int leftSum = 0;
-        int[] leftSums = new int[nums.length];
-        for (int i = 0; i < nums.length; i++) {
-            leftSum += nums[i];
-            leftSums[i] = leftSum;
+    public int numberOfSpecialChars(String word) {
+        Integer[] occurences = new Integer[123];
+        for (int i = 0; i < word.length(); i++) {
+            char c = word.charAt(i);
+            if (Character.isUpperCase(c)) {
+                if (occurences[(int) c] == null) {
+                    occurences[(int) c] = i;
+                }
+            } else {
+                occurences[(int) c] = i;
+            }
         }
-
-        int rightSum = 0;
-        int[] rightSums = new int[nums.length];
-        for (int i = nums.length - 1; i >= 0; i--) {
-            rightSum += nums[i];
-            rightSums[i] = rightSum;
+        int specialChars = 0;
+        for (int i = 65; i < 97; i++) {
+            if (occurences[i] == null || occurences[i + 32] == null) {
+                continue;
+            }
+            if (occurences[i] > occurences[i + 32]) {
+                specialChars++;
+            }
         }
-
-        for (int i = 0; i < nums.length; i++) {
-            nums[i] = Math.abs(leftSums[i] - rightSums[i]);
-        }
-        return nums;
+        return specialChars;
     }
 }
+
+//class Solution {
+//    public int[] leftRightDifference(int[] nums) {
+//        int leftSum = 0;
+//        int[] leftSums = new int[nums.length];
+//        for (int i = 0; i < nums.length; i++) {
+//            leftSum += nums[i];
+//            leftSums[i] = leftSum;
+//        }
+//
+//        int rightSum = 0;
+//        int[] rightSums = new int[nums.length];
+//        for (int i = nums.length - 1; i >= 0; i--) {
+//            rightSum += nums[i];
+//            rightSums[i] = rightSum;
+//        }
+//
+//        for (int i = 0; i < nums.length; i++) {
+//            nums[i] = Math.abs(leftSums[i] - rightSums[i]);
+//        }
+//        return nums;
+//    }
+//}
 
 //class Solution {
 //    public int longestOnes(int[] nums, int k) {
