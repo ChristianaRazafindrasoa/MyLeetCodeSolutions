@@ -3,48 +3,79 @@ package com.leetcode;
 import java.util.*;
 
 class Solution {
-    public int splitArray(int[] nums, int k) {
-        int min = 0;
-        int max = 0;
-        for (int i = 0; i < nums.length; i++) {
-            max += nums[i];
-        }
-
-        while (min < max) {
-            int mid = min + (max - min) / 2;
-            int splits = getSplits(nums, mid);
-            if (splits > k) {
-                min = mid + 1;
-            } else {
-                max = mid;
+    public int longestOnes(int[] nums, int k) {
+        int left = 0;
+        int right = 0;
+        int flips = 0;
+        int oneCount = 0;
+        int maxLength = 0;
+        while (left < nums.length && right < nums.length) {
+            while (right < nums.length && (nums[right] == 1 || flips < k)) {
+                if (nums[right] == 0) {
+                    flips++;
+                }
+                right++;
+                oneCount++;
+                maxLength = Math.max(maxLength, oneCount);
             }
-        }
-        return min;
-    }
-
-    private int getSplits(int[] nums, int sum) {
-        int splits = 1;
-        int currentSum = 0;
-        for (int i = 0; i < nums.length; i++) {
-            if (nums[i] > sum) {
-                return Integer.MAX_VALUE;
+            if (nums[left] == 0) {
+                flips--;
             }
-            if (currentSum + nums[i] > sum) {
-                splits++;
-                currentSum = nums[i];
-            } else {
-                currentSum += nums[i];
-            }
+            oneCount--;
+            left++;
         }
-        return splits;
+        return maxLength;
     }
 
     public static void main(String[] args) {
-        System.out.println(new Solution().splitArray(new int[]{1,4,4}, 3));
-        System.out.println(new Solution().splitArray(new int[]{1,2,3,4,5}, 2));
-        System.out.println(new Solution().splitArray(new int[]{1,2,3,4,5}, 3));
+        System.out.println(new Solution().longestOnes(new int[]{1,1,1,0,0,0,1,1,1,1,0}, 2));
+        System.out.println(new Solution().longestOnes(new int[]{0,1,1,0,1}, 1));
     }
 }
+
+//class Solution {
+//    public int splitArray(int[] nums, int k) {
+//        int min = 0;
+//        int max = 0;
+//        for (int i = 0; i < nums.length; i++) {
+//            max += nums[i];
+//        }
+//
+//        while (min < max) {
+//            int mid = min + (max - min) / 2;
+//            int splits = getSplits(nums, mid);
+//            if (splits > k) {
+//                min = mid + 1;
+//            } else {
+//                max = mid;
+//            }
+//        }
+//        return min;
+//    }
+//
+//    private int getSplits(int[] nums, int sum) {
+//        int splits = 1;
+//        int currentSum = 0;
+//        for (int i = 0; i < nums.length; i++) {
+//            if (nums[i] > sum) {
+//                return Integer.MAX_VALUE;
+//            }
+//            if (currentSum + nums[i] > sum) {
+//                splits++;
+//                currentSum = nums[i];
+//            } else {
+//                currentSum += nums[i];
+//            }
+//        }
+//        return splits;
+//    }
+//
+//    public static void main(String[] args) {
+//        System.out.println(new Solution().splitArray(new int[]{1,4,4}, 3));
+//        System.out.println(new Solution().splitArray(new int[]{1,2,3,4,5}, 2));
+//        System.out.println(new Solution().splitArray(new int[]{1,2,3,4,5}, 3));
+//    }
+//}
 
 //class Solution {
 //    public boolean carPooling(int[][] trips, int capacity) {
