@@ -3,35 +3,58 @@ package com.leetcode;
 import java.util.*;
 
 class Solution {
-    public int longestOnes(int[] nums, int k) {
-        int left = 0;
-        int right = 0;
-        int flips = 0;
-        int oneCount = 0;
-        int maxLength = 0;
-        while (left < nums.length && right < nums.length) {
-            while (right < nums.length && (nums[right] == 1 || flips < k)) {
-                if (nums[right] == 0) {
-                    flips++;
-                }
-                right++;
-                oneCount++;
-                maxLength = Math.max(maxLength, oneCount);
-            }
-            if (nums[left] == 0) {
-                flips--;
-            }
-            oneCount--;
-            left++;
+    public int[] leftRightDifference(int[] nums) {
+        int leftSum = 0;
+        int[] leftSums = new int[nums.length];
+        for (int i = 0; i < nums.length; i++) {
+            leftSum += nums[i];
+            leftSums[i] = leftSum;
         }
-        return maxLength;
-    }
 
-    public static void main(String[] args) {
-        System.out.println(new Solution().longestOnes(new int[]{1,1,1,0,0,0,1,1,1,1,0}, 2));
-        System.out.println(new Solution().longestOnes(new int[]{0,1,1,0,1}, 1));
+        int rightSum = 0;
+        int[] rightSums = new int[nums.length];
+        for (int i = nums.length - 1; i >= 0; i--) {
+            rightSum += nums[i];
+            rightSums[i] = rightSum;
+        }
+
+        for (int i = 0; i < nums.length; i++) {
+            nums[i] = Math.abs(leftSums[i] - rightSums[i]);
+        }
+        return nums;
     }
 }
+
+//class Solution {
+//    public int longestOnes(int[] nums, int k) {
+//        int left = 0;
+//        int right = 0;
+//        int flips = 0;
+//        int oneCount = 0;
+//        int maxLength = 0;
+//        while (left < nums.length && right < nums.length) {
+//            while (right < nums.length && (nums[right] == 1 || flips < k)) {
+//                if (nums[right] == 0) {
+//                    flips++;
+//                }
+//                right++;
+//                oneCount++;
+//                maxLength = Math.max(maxLength, oneCount);
+//            }
+//            if (nums[left] == 0) {
+//                flips--;
+//            }
+//            oneCount--;
+//            left++;
+//        }
+//        return maxLength;
+//    }
+//
+//    public static void main(String[] args) {
+//        System.out.println(new Solution().longestOnes(new int[]{1,1,1,0,0,0,1,1,1,1,0}, 2));
+//        System.out.println(new Solution().longestOnes(new int[]{0,1,1,0,1}, 1));
+//    }
+//}
 
 //class Solution {
 //    public int splitArray(int[] nums, int k) {
