@@ -3,30 +3,89 @@ package com.leetcode;
 import java.util.*;
 
 class Solution {
-    public int numberOfSpecialChars(String word) {
-        Integer[] occurences = new Integer[123];
-        for (int i = 0; i < word.length(); i++) {
-            char c = word.charAt(i);
-            if (Character.isUpperCase(c)) {
-                if (occurences[(int) c] == null) {
-                    occurences[(int) c] = i;
-                }
-            } else {
-                occurences[(int) c] = i;
+    public int climbStairs(int n, int[] costs) {
+        int[] costsCopy = new int[n + 1];
+        costsCopy[0] = 0;
+        for (int i = 0; i < costs.length; i++) {
+            costsCopy[i + 1] = costs[i];
+        }
+        Integer[] memo = new Integer[n + 1];
+        return climbStairsHelper(costsCopy, 0, memo);
+    }
+
+    private int climbStairsHelper(int[] costs, int index, Integer[] memo) {
+        if (index >= costs.length) {
+            return Integer.MAX_VALUE;
+        }
+        if (index == costs.length - 1) {
+            return 0;
+        }
+        if (memo[index] != null) {
+            return memo[index];
+        }
+        int jumpOne = Integer.MAX_VALUE;
+        if (index + 1 < costs.length) {
+            int nextCost = climbStairsHelper(costs, index + 1, memo);
+            if (nextCost != Integer.MAX_VALUE) {
+                jumpOne = getCurrentCost(costs, index, index + 1)
+                        + nextCost;
             }
         }
-        int specialChars = 0;
-        for (int i = 65; i < 97; i++) {
-            if (occurences[i] == null || occurences[i + 32] == null) {
-                continue;
-            }
-            if (occurences[i] > occurences[i + 32]) {
-                specialChars++;
+        int jumpTwo = Integer.MAX_VALUE;
+        if (index + 2 < costs.length) {
+            int nextCost = climbStairsHelper(costs, index + 2, memo);
+            if (nextCost != Integer.MAX_VALUE) {
+                jumpTwo = getCurrentCost(costs, index, index + 2)
+                        + nextCost;
             }
         }
-        return specialChars;
+        int jumpThree = Integer.MAX_VALUE;
+        if (index + 3 < costs.length) {
+            int nextCost = climbStairsHelper(costs, index + 3, memo);
+            if (nextCost != Integer.MAX_VALUE) {
+                jumpThree = getCurrentCost(costs, index, index + 3)
+                        + nextCost;
+            }
+        }
+        int minCost = Math.min(Math.min(jumpOne, jumpTwo), jumpThree);
+        memo[index] = minCost;
+        return minCost;
+    }
+
+    private int getCurrentCost(int[] costs, int currentIndex, int nextIndex) {
+        return costs[nextIndex] + (int) Math.pow((nextIndex - currentIndex), 2);
+    }
+
+    public static void main(String[] args) {
+        System.out.println(new Solution().climbStairs(4, new int[]{1,2,3,4}));
     }
 }
+
+//class Solution {
+//    public int numberOfSpecialChars(String word) {
+//        Integer[] occurences = new Integer[123];
+//        for (int i = 0; i < word.length(); i++) {
+//            char c = word.charAt(i);
+//            if (Character.isUpperCase(c)) {
+//                if (occurences[(int) c] == null) {
+//                    occurences[(int) c] = i;
+//                }
+//            } else {
+//                occurences[(int) c] = i;
+//            }
+//        }
+//        int specialChars = 0;
+//        for (int i = 65; i < 97; i++) {
+//            if (occurences[i] == null || occurences[i + 32] == null) {
+//                continue;
+//            }
+//            if (occurences[i] > occurences[i + 32]) {
+//                specialChars++;
+//            }
+//        }
+//        return specialChars;
+//    }
+//}
 
 //class Solution {
 //    public int[] leftRightDifference(int[] nums) {
