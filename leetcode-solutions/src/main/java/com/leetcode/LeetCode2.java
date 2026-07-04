@@ -3,63 +3,172 @@ package com.leetcode;
 import java.util.*;
 
 class Solution {
-    public int climbStairs(int n, int[] costs) {
-        int[] costsCopy = new int[n + 1];
-        costsCopy[0] = 0;
-        for (int i = 0; i < costs.length; i++) {
-            costsCopy[i + 1] = costs[i];
+    static class Location {
+        int row;
+        int col;
+        public Location(int row, int col) {
+            this.row = row;
+            this.col = col;
         }
-        Integer[] memo = new Integer[n + 1];
-        return climbStairsHelper(costsCopy, 0, memo);
+        public String toString() {
+            return row + "," + col;
+        }
     }
 
-    private int climbStairsHelper(int[] costs, int index, Integer[] memo) {
-        if (index >= costs.length) {
-            return Integer.MAX_VALUE;
-        }
-        if (index == costs.length - 1) {
-            return 0;
-        }
-        if (memo[index] != null) {
-            return memo[index];
-        }
-        int jumpOne = Integer.MAX_VALUE;
-        if (index + 1 < costs.length) {
-            int nextCost = climbStairsHelper(costs, index + 1, memo);
-            if (nextCost != Integer.MAX_VALUE) {
-                jumpOne = getCurrentCost(costs, index, index + 1)
-                        + nextCost;
+    private final int[][] DELTAS = new int[][]{{0,-1},{0,1},{-1,0},{1,0}};
+
+    public int[][] highestPeak(int[][] isWater) {
+        Queue<Location> queue = new ArrayDeque<>();
+        Set<String> visited = new HashSet<>();
+        for (int row = 0; row < isWater.length; row++) {
+            for (int col = 0; col < isWater[row].length; col++) {
+                if (isWater[row][col] == 1) {
+                    Location water = new Location(row, col);
+                    queue.add(water);
+                    visited.add(water.toString());
+                }
             }
         }
-        int jumpTwo = Integer.MAX_VALUE;
-        if (index + 2 < costs.length) {
-            int nextCost = climbStairsHelper(costs, index + 2, memo);
-            if (nextCost != Integer.MAX_VALUE) {
-                jumpTwo = getCurrentCost(costs, index, index + 2)
-                        + nextCost;
-            }
-        }
-        int jumpThree = Integer.MAX_VALUE;
-        if (index + 3 < costs.length) {
-            int nextCost = climbStairsHelper(costs, index + 3, memo);
-            if (nextCost != Integer.MAX_VALUE) {
-                jumpThree = getCurrentCost(costs, index, index + 3)
-                        + nextCost;
-            }
-        }
-        int minCost = Math.min(Math.min(jumpOne, jumpTwo), jumpThree);
-        memo[index] = minCost;
-        return minCost;
+        return bfs(queue, visited, isWater);
     }
 
-    private int getCurrentCost(int[] costs, int currentIndex, int nextIndex) {
-        return costs[nextIndex] + (int) Math.pow((nextIndex - currentIndex), 2);
+    private int[][] bfs(Queue<Location> queue, Set<String> visited, int[][] isWater) {
+        int[][] result = new int[isWater.length][isWater[0].length];
+        int height = 0;
+        while (!queue.isEmpty()) {
+            int size = queue.size();
+            while (size > 0) {
+                Location current = queue.poll();
+                size--;
+                result[current.row][current.col] = height;
+                for (Location neighbor : getNeighbors(current, isWater)) {
+                    if (visited.add(neighbor.toString())) {
+                        queue.add(neighbor);
+                    }
+                }
+            }
+            height++;
+        }
+        return result;
+    }
+
+    private List<Location> getNeighbors(Location current, int[][] isWater) {
+        List<Location> neighbors = new ArrayList<>();
+        for (int[] delta : DELTAS) {
+            int neighborRow = current.row + delta[0];
+            int neighborCol = current.col + delta[1];
+            if (neighborRow >= 0 && neighborRow < isWater.length &&
+                neighborCol >= 0 && neighborCol < isWater[0].length) {
+                neighbors.add(new Location(neighborRow, neighborCol));
+            }
+        }
+        return neighbors;
     }
 
     public static void main(String[] args) {
-        System.out.println(new Solution().climbStairs(4, new int[]{1,2,3,4}));
+        new Solution().highestPeak(new int[][]{{0,0,1},{1,0,0},{0,0,0}});
     }
 }
+
+//class Solution {
+//    public List<String> findAndReplacePattern(String[] words, String pattern) {
+//        List<String> result = new ArrayList<>(words.length);
+//        for (String word : words) {
+//            if (doesMatchPattern(word, pattern)) {
+//                result.add(word);
+//            }
+//        }
+//        return result;
+//    }
+//
+//    private boolean doesMatchPattern(String word, String pattern) {
+//        Map<Character, Character> wordToPattern = new HashMap<>();
+//        Map<Character, Character> patternToWord = new HashMap<>();
+//        if (word.length() != pattern.length()) {
+//            return false;
+//        }
+//
+//        for (int i = 0; i < word.length(); i++) {
+//            char wordChar = word.charAt(i);
+//            char patternChar = pattern.charAt(i);
+//            if (wordToPattern.get(wordChar) != null &&
+//                wordToPattern.get(wordChar) != patternChar) {
+//                return false;
+//            }
+//            wordToPattern.putIfAbsent(wordChar, patternChar);
+//            if (patternToWord.get(patternChar) != null &&
+//                    patternToWord.get(patternChar) != wordChar) {
+//                return false;
+//            }
+//            patternToWord.putIfAbsent(patternChar, wordChar);
+//        }
+//        return true;
+//    }
+//
+//    public static void main(String[] args) {
+//        System.out.println(new Solution().findAndReplacePattern(
+//                new String[]{"abc","deq","mee","aqq","dkd","ccc"}, "abb"));
+//    }
+//}
+
+//class Solution {
+//    public int climbStairs(int n, int[] costs) {
+//        int[] costsCopy = new int[n + 1];
+//        costsCopy[0] = 0;
+//        for (int i = 0; i < costs.length; i++) {
+//            costsCopy[i + 1] = costs[i];
+//        }
+//        Integer[] memo = new Integer[n + 1];
+//        return climbStairsHelper(costsCopy, 0, memo);
+//    }
+//
+//    private int climbStairsHelper(int[] costs, int index, Integer[] memo) {
+//        if (index >= costs.length) {
+//            return Integer.MAX_VALUE;
+//        }
+//        if (index == costs.length - 1) {
+//            return 0;
+//        }
+//        if (memo[index] != null) {
+//            return memo[index];
+//        }
+//        int jumpOne = Integer.MAX_VALUE;
+//        if (index + 1 < costs.length) {
+//            int nextCost = climbStairsHelper(costs, index + 1, memo);
+//            if (nextCost != Integer.MAX_VALUE) {
+//                jumpOne = getCurrentCost(costs, index, index + 1)
+//                        + nextCost;
+//            }
+//        }
+//        int jumpTwo = Integer.MAX_VALUE;
+//        if (index + 2 < costs.length) {
+//            int nextCost = climbStairsHelper(costs, index + 2, memo);
+//            if (nextCost != Integer.MAX_VALUE) {
+//                jumpTwo = getCurrentCost(costs, index, index + 2)
+//                        + nextCost;
+//            }
+//        }
+//        int jumpThree = Integer.MAX_VALUE;
+//        if (index + 3 < costs.length) {
+//            int nextCost = climbStairsHelper(costs, index + 3, memo);
+//            if (nextCost != Integer.MAX_VALUE) {
+//                jumpThree = getCurrentCost(costs, index, index + 3)
+//                        + nextCost;
+//            }
+//        }
+//        int minCost = Math.min(Math.min(jumpOne, jumpTwo), jumpThree);
+//        memo[index] = minCost;
+//        return minCost;
+//    }
+//
+//    private int getCurrentCost(int[] costs, int currentIndex, int nextIndex) {
+//        return costs[nextIndex] + (int) Math.pow((nextIndex - currentIndex), 2);
+//    }
+//
+//    public static void main(String[] args) {
+//        System.out.println(new Solution().climbStairs(4, new int[]{1,2,3,4}));
+//    }
+//}
 
 //class Solution {
 //    public int numberOfSpecialChars(String word) {
